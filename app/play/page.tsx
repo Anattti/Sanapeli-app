@@ -95,7 +95,7 @@ export default function PlayPage() {
           incorrectWords: isCorrect ? incorrectWords : [...incorrectWords, currentWord.en],
         };
         saveProgress(progress);
-        router.push('/results');
+        router.push('/results?mode=play');
       }
     }, 1500);
   };

@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useEffect, useState } from 'react';
 import Button from '@/components/Button';
@@ -12,6 +12,7 @@ import { calculatePercentage, getFeedbackLevel, getFeedbackEmoji } from '@/utils
 
 export default function ResultsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useLanguage();
   
   const [progress, setProgress] = useState<{
@@ -19,6 +20,8 @@ export default function ResultsPage() {
     incorrectAnswers: number;
     incorrectWords: string[];
   } | null>(null);
+  
+  const gameMode = searchParams.get('mode') || 'play'; // 'play' tai 'challenge'
   
   useEffect(() => {
     const savedProgress = getProgress();
@@ -52,7 +55,7 @@ export default function ResultsPage() {
   
   const handlePlayAgain = () => {
     clearProgress();
-    router.push('/play');
+    router.push(`/${gameMode}`);
   };
   
   const handleBackToMenu = () => {
@@ -198,10 +201,10 @@ export default function ResultsPage() {
             {progress.incorrectWords.length > 0 && (
               <Button
                 onClick={() => {
-                  // Aloita uusi peli väärinmenneillä sanoilla
+                  // Aloita uusi peli väärinmenneillä sanoilla samassa moodissa
                   const wrongWordsParam = progress.incorrectWords.join(',');
                   clearProgress();
-                  router.push(`/play?retry=${encodeURIComponent(wrongWordsParam)}`);
+                  router.push(`/${gameMode}?retry=${encodeURIComponent(wrongWordsParam)}`);
                 }}
                 variant="primary"
                 size="medium"

@@ -112,7 +112,7 @@ export default function ChallengePage() {
           incorrectWords: finalIncorrectWords,
         };
         saveProgress(progress);
-        router.push('/results');
+        router.push('/results?mode=challenge');
       }
     }, 2000);
   };
