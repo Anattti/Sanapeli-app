@@ -198,9 +198,10 @@ export default function ResultsPage() {
             {progress.incorrectWords.length > 0 && (
               <Button
                 onClick={() => {
-                  // TODO: Implementoi harjoittelu väärinmenneillä sanoilla
+                  // Aloita uusi peli väärinmenneillä sanoilla
+                  const wrongWordsParam = progress.incorrectWords.join(',');
                   clearProgress();
-                  router.push('/practice');
+                  router.push(`/play?retry=${encodeURIComponent(wrongWordsParam)}`);
                 }}
                 variant="primary"
                 size="medium"

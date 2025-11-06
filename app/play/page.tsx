@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useState, useEffect } from 'react';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -14,11 +14,13 @@ import {
   selectWeightedWords,
   generateChoices,
   updateWeight,
+  shuffleArray,
 } from '@/utils/gameLogic';
 import { saveProgress } from '@/utils/storage';
 
 export default function PlayPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useLanguage();
   
   const [gameWords, setGameWords] = useState<Word[]>([]);
@@ -32,13 +34,26 @@ export default function PlayPage() {
   
   // Alusta peli
   useEffect(() => {
-    const selectedWords = selectWeightedWords(words, 15);
+    const retryParam = searchParams.get('retry');
+    
+    let selectedWords: Word[];
+    
+    if (retryParam) {
+      // Harjoittelu väärinmenneillä sanoilla
+      const wrongWordsList = retryParam.split(',');
+      const filteredWords = words.filter(word => wrongWordsList.includes(word.en));
+      selectedWords = shuffleArray(filteredWords);
+    } else {
+      // Normaali peli: valitse painotetusti
+      selectedWords = selectWeightedWords(words, 15);
+    }
+    
     setGameWords(selectedWords);
     
     if (selectedWords.length > 0) {
       setChoices(generateChoices(selectedWords[0], words));
     }
-  }, []);
+  }, [searchParams]);
   
   const currentWord = gameWords[currentIndex];
   
