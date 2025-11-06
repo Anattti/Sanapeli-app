@@ -117,6 +117,14 @@ export default function Home() {
             >
               🎮 {t.menu.play}
             </Button>
+            
+            <Button
+              onClick={() => router.push('/challenge')}
+              variant="success"
+              size="large"
+            >
+              🏆 {t.menu.challenge}
+            </Button>
           </motion.div>
         </motion.main>
       </div>

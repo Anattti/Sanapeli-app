@@ -7,6 +7,7 @@ export const translations: Record<Language, Translations> = {
       subtitle: 'Hauska tapa oppia sanastoa',
       practice: 'Harjoittele',
       play: 'Pelaa',
+      challenge: 'Haaste',
       switchLanguage: 'EN',
     },
     practice: {
@@ -17,6 +18,16 @@ export const translations: Record<Language, Translations> = {
     play: {
       correct: 'Oikein! 🎉',
       incorrect: 'Väärin! Yritä uudelleen 💪',
+      score: 'Pisteet',
+      progress: 'Edistyminen',
+    },
+    challenge: {
+      title: 'Haastetila',
+      placeholder: 'Kirjoita sana englanniksi...',
+      submit: 'Tarkista',
+      correct: 'Oikein! 🎉',
+      incorrect: 'Väärin!',
+      showAnswer: 'Oikea vastaus:',
       score: 'Pisteet',
       progress: 'Edistyminen',
     },
@@ -40,6 +51,7 @@ export const translations: Record<Language, Translations> = {
       subtitle: 'Fun way to learn vocabulary',
       practice: 'Practice',
       play: 'Play',
+      challenge: 'Challenge',
       switchLanguage: 'FI',
     },
     practice: {
@@ -50,6 +62,16 @@ export const translations: Record<Language, Translations> = {
     play: {
       correct: 'Correct! 🎉',
       incorrect: 'Wrong! Try again 💪',
+      score: 'Score',
+      progress: 'Progress',
+    },
+    challenge: {
+      title: 'Challenge Mode',
+      placeholder: 'Type the word in English...',
+      submit: 'Check',
+      correct: 'Correct! 🎉',
+      incorrect: 'Wrong!',
+      showAnswer: 'Correct answer:',
       score: 'Score',
       progress: 'Progress',
     },

@@ -20,6 +20,7 @@ export interface Translations {
     subtitle: string;
     practice: string;
     play: string;
+    challenge: string;
     switchLanguage: string;
   };
   practice: {
@@ -30,6 +31,16 @@ export interface Translations {
   play: {
     correct: string;
     incorrect: string;
+    score: string;
+    progress: string;
+  };
+  challenge: {
+    title: string;
+    placeholder: string;
+    submit: string;
+    correct: string;
+    incorrect: string;
+    showAnswer: string;
     score: string;
     progress: string;
   };
