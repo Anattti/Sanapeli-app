@@ -45,17 +45,15 @@ export default function EmojiCard({
   const englishWithArticle = article ? `${article} ${englishWord}` : englishWord;
   
   return (
-    <motion.div
-      className="relative w-full aspect-square cursor-pointer perspective-1000"
+    <div
+      className="relative w-full aspect-square cursor-pointer"
       onClick={handleClick}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
     >
       <motion.div
         className="relative w-full h-full"
-        style={{ transformStyle: 'preserve-3d' }}
         animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.6, type: 'spring', stiffness: 100 }}
+        transition={{ duration: 0.5 }}
+        style={{ transformStyle: 'preserve-3d' }}
       >
         {/* Etupuoli - Emoji + suomenkielinen sana TAI pelkkä suomenkielinen sana */}
         <div
@@ -91,7 +89,7 @@ export default function EmojiCard({
           </span>
         </div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
 

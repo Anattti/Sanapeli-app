@@ -19,25 +19,6 @@ export default function PracticePage() {
   const categories = useMemo(() => getCategories(), []);
   const displayedWords = useMemo(() => getWordsByCategory(selectedCategory), [selectedCategory]);
   
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  };
-  
-  const itemVariants = {
-    hidden: { scale: 0, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: { duration: 0.4 },
-    },
-  };
-  
   return (
     <PageTransition>
       <div className="min-h-screen p-4 md:p-8 relative">
@@ -80,25 +61,22 @@ export default function PracticePage() {
           {displayedWords.length} {displayedWords.length === 1 ? 'sana' : 'sanaa'}
         </p>
         
-        {/* Emoji-kortti grid */}
-        <motion.div
+        {/* Emoji-kortti grid - Ei animaatioita suorituskyvyn vuoksi */}
+        <div
           className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-7xl mx-auto"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
           key={selectedCategory}
         >
           {displayedWords.map((word, index) => (
-            <motion.div key={`${word.en}-${index}`} variants={itemVariants}>
+            <div key={`${word.en}-${index}`}>
               <EmojiCard 
                 emoji={word.emoji} 
                 englishWord={word.en}
                 finnishWord={word.fi}
                 article={word.article}
               />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </PageTransition>
   );
