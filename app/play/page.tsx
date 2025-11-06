@@ -149,7 +149,7 @@ export default function PlayPage() {
             progressLabel={t.play.progress}
           />
           
-          {/* Emoji */}
+          {/* Emoji + suomenkielinen sana */}
           <motion.div
             key={currentIndex}
             initial={{ scale: 0, rotate: -180 }}
@@ -159,9 +159,22 @@ export default function PlayPage() {
               stiffness: 100,
               damping: 15,
             }}
-            className="text-8xl md:text-9xl mb-12 select-none"
+            className="flex flex-col items-center mb-12 select-none"
           >
-            {currentWord.emoji}
+            {currentWord.emoji ? (
+              <>
+                <span className="text-8xl md:text-9xl mb-4">
+                  {currentWord.emoji}
+                </span>
+                <span className="text-2xl md:text-3xl font-semibold text-gray-700">
+                  {currentWord.fi}
+                </span>
+              </>
+            ) : (
+              <span className="text-4xl md:text-5xl font-bold text-gray-800">
+                {currentWord.fi}
+              </span>
+            )}
           </motion.div>
           
           {/* Palaute */}
