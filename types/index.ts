@@ -6,6 +6,7 @@ export interface Word {
   fi: string;
   weight: number;
   article?: 'a' | 'an'; // Englannin kieliopin mukainen etuliite
+  category: string; // Kategoria: animals, food, verbs, adjectives, etc.
 }
 
 export interface GameProgress {
@@ -27,12 +28,15 @@ export interface Translations {
     title: string;
     backToMenu: string;
     clickToReveal: string;
+    selectCategory: string;
   };
   play: {
     correct: string;
     incorrect: string;
     score: string;
     progress: string;
+    selectCategory: string;
+    startGame: string;
   };
   challenge: {
     title: string;
@@ -43,6 +47,8 @@ export interface Translations {
     showAnswer: string;
     score: string;
     progress: string;
+    selectCategory: string;
+    startGame: string;
   };
   results: {
     title: string;

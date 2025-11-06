@@ -3,12 +3,13 @@
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useState, useEffect, useRef, FormEvent } from 'react';
+import { useState, useEffect, useRef, FormEvent, useMemo } from 'react';
 import LanguageToggle from '@/components/LanguageToggle';
 import GameHUD from '@/components/GameHUD';
 import Button from '@/components/Button';
+import CategorySelector from '@/components/CategorySelector';
 import PageTransition from '@/components/PageTransition';
-import { words } from '@/data/words';
+import { getCategories, getWordsByCategory } from '@/data/words';
 import { Word } from '@/types';
 import {
   selectWeightedWords,
@@ -23,6 +24,10 @@ export default function ChallengePage() {
   const { t } = useLanguage();
   const inputRef = useRef<HTMLInputElement>(null);
   
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [gameStarted, setGameStarted] = useState(false);
+  const categories = useMemo(() => getCategories(), []);
+  
   const [gameWords, setGameWords] = useState<Word[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
@@ -32,23 +37,36 @@ export default function ChallengePage() {
   const [answerState, setAnswerState] = useState<'default' | 'correct' | 'incorrect'>('default');
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
   
-  // Alusta peli
-  useEffect(() => {
+  // Käynnistä peli kun kategoria on valittu
+  const startGame = () => {
     const retryParam = searchParams.get('retry');
+    const categoryWords = getWordsByCategory(selectedCategory);
     
     let selectedWords: Word[];
     
     if (retryParam) {
       // Harjoittelu väärinmenneillä sanoilla
       const wrongWordsList = retryParam.split(',');
-      const filteredWords = words.filter(word => wrongWordsList.includes(word.en));
+      const filteredWords = categoryWords.filter(word => wrongWordsList.includes(word.en));
       selectedWords = shuffleArray(filteredWords);
     } else {
       // Normaali peli: valitse painotetusti
-      selectedWords = selectWeightedWords(words, 15);
+      selectedWords = selectWeightedWords(categoryWords, Math.min(15, categoryWords.length));
     }
     
     setGameWords(selectedWords);
+    
+    if (selectedWords.length > 0) {
+      setGameStarted(true);
+    }
+  };
+  
+  // Aloita peli automaattisesti jos retry-parametri on olemassa
+  useEffect(() => {
+    const retryParam = searchParams.get('retry');
+    if (retryParam) {
+      startGame();
+    }
   }, [searchParams]);
   
   // Fokusoi input kun sana vaihtuu
@@ -80,16 +98,17 @@ export default function ChallengePage() {
     }
     
     const isCorrect = validAnswers.includes(normalized);
+    const categoryWords = getWordsByCategory(selectedCategory);
     
     if (isCorrect) {
       setAnswerState('correct');
       setCorrectAnswers(prev => prev + 1);
-      updateWeight(currentWord, true, words);
+      updateWeight(currentWord, true, categoryWords);
     } else {
       setAnswerState('incorrect');
       setIncorrectAnswers(prev => prev + 1);
       setIncorrectWords(prev => [...prev, currentWord.en]);
-      updateWeight(currentWord, false, words);
+      updateWeight(currentWord, false, categoryWords);
       setShowCorrectAnswer(true);
     }
     
@@ -123,6 +142,56 @@ export default function ChallengePage() {
       checkAnswer();
     }
   };
+  
+  // Näytä kategoriavalinta ennen pelin alkua
+  if (!gameStarted) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen p-4 md:p-8 flex flex-col">
+          {/* Kielivalinta */}
+          <div className="absolute top-4 right-4 md:top-8 md:right-8 z-10">
+            <LanguageToggle variant="header" />
+          </div>
+          
+          <div className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full">
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              className="text-center mb-8"
+            >
+              <h1 className="text-3xl md:text-5xl font-bold text-gray-800 mb-3">
+                {t.challenge.title}
+              </h1>
+              <p className="text-base md:text-lg text-gray-600">
+                {t.challenge.selectCategory}
+              </p>
+            </motion.div>
+            
+            <CategorySelector
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+            />
+            
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="mt-8"
+            >
+              <Button
+                onClick={startGame}
+                variant="success"
+                size="large"
+                className="px-12"
+              >
+                🏆 {t.challenge.startGame}
+              </Button>
+            </motion.div>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
   
   if (!currentWord) {
     return (

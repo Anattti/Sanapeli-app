@@ -14,12 +14,15 @@ export const translations: Record<Language, Translations> = {
       title: 'Harjoittelu',
       backToMenu: 'Takaisin valikkoon',
       clickToReveal: 'Klikkaa nähdäksesi sanan',
+      selectCategory: 'Valitse kategoria',
     },
     play: {
       correct: 'Oikein! 🎉',
       incorrect: 'Väärin! Yritä uudelleen 💪',
       score: 'Pisteet',
       progress: 'Edistyminen',
+      selectCategory: 'Valitse kategoria',
+      startGame: 'Aloita peli',
     },
     challenge: {
       title: 'Haastetila',
@@ -30,6 +33,8 @@ export const translations: Record<Language, Translations> = {
       showAnswer: 'Oikea vastaus:',
       score: 'Pisteet',
       progress: 'Edistyminen',
+      selectCategory: 'Valitse kategoria',
+      startGame: 'Aloita haaste',
     },
     results: {
       title: 'Tulokset',
@@ -58,12 +63,15 @@ export const translations: Record<Language, Translations> = {
       title: 'Practice Mode',
       backToMenu: 'Back to Menu',
       clickToReveal: 'Click to reveal the word',
+      selectCategory: 'Select Category',
     },
     play: {
       correct: 'Correct! 🎉',
       incorrect: 'Wrong! Try again 💪',
       score: 'Score',
       progress: 'Progress',
+      selectCategory: 'Select Category',
+      startGame: 'Start Game',
     },
     challenge: {
       title: 'Challenge Mode',
@@ -74,6 +82,8 @@ export const translations: Record<Language, Translations> = {
       showAnswer: 'Correct answer:',
       score: 'Score',
       progress: 'Progress',
+      selectCategory: 'Select Category',
+      startGame: 'Start Challenge',
     },
     results: {
       title: 'Results',

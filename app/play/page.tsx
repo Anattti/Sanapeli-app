@@ -3,12 +3,14 @@
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import LanguageToggle from '@/components/LanguageToggle';
 import GameHUD from '@/components/GameHUD';
 import ChoiceButton from '@/components/ChoiceButton';
+import CategorySelector from '@/components/CategorySelector';
+import Button from '@/components/Button';
 import PageTransition from '@/components/PageTransition';
-import { words } from '@/data/words';
+import { getCategories, getWordsByCategory } from '@/data/words';
 import { Word } from '@/types';
 import {
   selectWeightedWords,
@@ -23,6 +25,10 @@ export default function PlayPage() {
   const searchParams = useSearchParams();
   const { t } = useLanguage();
   
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [gameStarted, setGameStarted] = useState(false);
+  const categories = useMemo(() => getCategories(), []);
+  
   const [gameWords, setGameWords] = useState<Word[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
@@ -32,26 +38,36 @@ export default function PlayPage() {
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [answerState, setAnswerState] = useState<'default' | 'correct' | 'incorrect'>('default');
   
-  // Alusta peli
-  useEffect(() => {
+  // Käynnistä peli kun kategoria on valittu
+  const startGame = () => {
     const retryParam = searchParams.get('retry');
+    const categoryWords = getWordsByCategory(selectedCategory);
     
     let selectedWords: Word[];
     
     if (retryParam) {
       // Harjoittelu väärinmenneillä sanoilla
       const wrongWordsList = retryParam.split(',');
-      const filteredWords = words.filter(word => wrongWordsList.includes(word.en));
+      const filteredWords = categoryWords.filter(word => wrongWordsList.includes(word.en));
       selectedWords = shuffleArray(filteredWords);
     } else {
       // Normaali peli: valitse painotetusti
-      selectedWords = selectWeightedWords(words, 15);
+      selectedWords = selectWeightedWords(categoryWords, Math.min(15, categoryWords.length));
     }
     
     setGameWords(selectedWords);
     
     if (selectedWords.length > 0) {
-      setChoices(generateChoices(selectedWords[0], words));
+      setChoices(generateChoices(selectedWords[0], categoryWords));
+      setGameStarted(true);
+    }
+  };
+  
+  // Aloita peli automaattisesti jos retry-parametri on olemassa
+  useEffect(() => {
+    const retryParam = searchParams.get('retry');
+    if (retryParam) {
+      startGame();
     }
   }, [searchParams]);
   
@@ -68,23 +84,25 @@ export default function PlayPage() {
       : currentWord.en;
     
     const isCorrect = choice === correctAnswer;
+    const categoryWords = getWordsByCategory(selectedCategory);
     
     if (isCorrect) {
       setAnswerState('correct');
       setCorrectAnswers(prev => prev + 1);
-      updateWeight(currentWord, true, words);
+      updateWeight(currentWord, true, categoryWords);
     } else {
       setAnswerState('incorrect');
       setIncorrectAnswers(prev => prev + 1);
       setIncorrectWords(prev => [...prev, currentWord.en]);
-      updateWeight(currentWord, false, words);
+      updateWeight(currentWord, false, categoryWords);
     }
     
     // Siirry seuraavaan sanaan 1.5 sekunnin kuluttua
     setTimeout(() => {
       if (currentIndex + 1 < gameWords.length) {
         setCurrentIndex(prev => prev + 1);
-        setChoices(generateChoices(gameWords[currentIndex + 1], words));
+        const categoryWords = getWordsByCategory(selectedCategory);
+        setChoices(generateChoices(gameWords[currentIndex + 1], categoryWords));
         setSelectedChoice(null);
         setAnswerState('default');
       } else {
@@ -116,6 +134,53 @@ export default function PlayPage() {
     }
     return 'disabled';
   };
+  
+  // Näytä kategoriavalinta ennen pelin alkua
+  if (!gameStarted) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen p-4 md:p-8 flex flex-col">
+          {/* Kielivalinta */}
+          <div className="absolute top-4 right-4 md:top-8 md:right-8 z-10">
+            <LanguageToggle variant="header" />
+          </div>
+          
+          <div className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full">
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              className="text-center mb-8"
+            >
+              <h1 className="text-3xl md:text-5xl font-bold text-gray-800 mb-3">
+                {t.play.selectCategory}
+              </h1>
+            </motion.div>
+            
+            <CategorySelector
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+            />
+            
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="mt-8"
+            >
+              <Button
+                onClick={startGame}
+                variant="success"
+                size="large"
+                className="px-12"
+              >
+                🎮 {t.play.startGame}
+              </Button>
+            </motion.div>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
   
   if (!currentWord) {
     return (
