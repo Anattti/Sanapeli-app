@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useState, useEffect, useRef, FormEvent, useMemo } from 'react';
+import { useState, useEffect, useRef, FormEvent, useMemo, Suspense } from 'react';
 import LanguageToggle from '@/components/LanguageToggle';
 import GameHUD from '@/components/GameHUD';
 import Button from '@/components/Button';
@@ -18,7 +18,7 @@ import {
 } from '@/utils/gameLogic';
 import { saveProgress } from '@/utils/storage';
 
-export default function ChallengePage() {
+function ChallengePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useLanguage();
@@ -332,3 +332,17 @@ export default function ChallengePage() {
   );
 }
 
+export default function ChallengePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">⏳</div>
+          <p className="text-xl text-gray-600">Ladataan...</p>
+        </div>
+      </div>
+    }>
+      <ChallengePageContent />
+    </Suspense>
+  );
+}

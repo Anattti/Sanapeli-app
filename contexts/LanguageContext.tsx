@@ -11,26 +11,26 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Lataa kieli LocalStoragesta
-    const savedLanguage = localStorage.getItem('language') as Language | null;
-    if (savedLanguage && (savedLanguage === 'fi' || savedLanguage === 'en')) {
-      setLanguageState(savedLanguage);
+    // Lataa kieli LocalStoragesta vain jos selaimessa
+    if (typeof window !== 'undefined') {
+      const savedLanguage = localStorage.getItem('language') as Language | null;
+      if (savedLanguage && (savedLanguage === 'fi' || savedLanguage === 'en')) {
+        setLanguageState(savedLanguage);
+      }
     }
     setMounted(true);
   }, []);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem('language', lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('language', lang);
+    }
   };
 
   const t: Translations = translations[language];
 
-  // Estä hydraatio-ongelmat
-  if (!mounted) {
-    return null;
-  }
-
+  // Renderöi aina, älä estä hydraatiota
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
       {children}

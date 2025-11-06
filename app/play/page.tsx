@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import LanguageToggle from '@/components/LanguageToggle';
 import GameHUD from '@/components/GameHUD';
 import ChoiceButton from '@/components/ChoiceButton';
@@ -20,7 +20,7 @@ import {
 } from '@/utils/gameLogic';
 import { saveProgress } from '@/utils/storage';
 
-export default function PlayPage() {
+function PlayPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useLanguage();
@@ -281,3 +281,17 @@ export default function PlayPage() {
   );
 }
 
+export default function PlayPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">⏳</div>
+          <p className="text-xl text-gray-600">Ladataan...</p>
+        </div>
+      </div>
+    }>
+      <PlayPageContent />
+    </Suspense>
+  );
+}

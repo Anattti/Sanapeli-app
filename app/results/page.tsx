@@ -3,14 +3,14 @@
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import Button from '@/components/Button';
 import LanguageToggle from '@/components/LanguageToggle';
 import PageTransition from '@/components/PageTransition';
 import { getProgress, clearProgress, saveBestScore } from '@/utils/storage';
 import { calculatePercentage, getFeedbackLevel, getFeedbackEmoji } from '@/utils/gameLogic';
 
-export default function ResultsPage() {
+function ResultsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useLanguage();
@@ -227,3 +227,17 @@ export default function ResultsPage() {
   );
 }
 
+export default function ResultsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">⏳</div>
+          <p className="text-xl text-gray-600">Ladataan...</p>
+        </div>
+      </div>
+    }>
+      <ResultsPageContent />
+    </Suspense>
+  );
+}
