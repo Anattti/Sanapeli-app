@@ -8,6 +8,8 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragOverEvent,
+  DragStartEvent,
   useDraggable,
   useDroppable,
 } from '@dnd-kit/core';
@@ -249,6 +251,7 @@ function StreakPageContent() {
   const [isNewBest, setIsNewBest] = useState(false);
 
   const timeoutRef = useRef<number | null>(null);
+  const lastOverRef = useRef<string | null>(null);
 
   useEffect(() => {
     const stats = getStreakStats();
@@ -271,6 +274,12 @@ function StreakPageContent() {
       },
     }),
   );
+
+  const triggerHaptic = useCallback((pattern: number | number[]) => {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate(pattern);
+    }
+  }, []);
 
   const correctAnswer = useMemo(() => {
     if (!currentWord) return null;
@@ -361,15 +370,47 @@ function StreakPageContent() {
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event;
-      if (!over || over.id !== 'answer-zone') return;
-      if (answerState !== 'default' || showReset) return;
+
+      if (answerState !== 'default' || showReset) {
+        lastOverRef.current = null;
+        return;
+      }
+
+      if (!over || over.id !== 'answer-zone') {
+        lastOverRef.current = null;
+        return;
+      }
 
       const choice = active.data.current?.choice;
       if (typeof choice === 'string') {
+        triggerHaptic([0, 40]);
         handleChoiceResolution(choice);
       }
+
+      lastOverRef.current = null;
     },
-    [answerState, handleChoiceResolution, showReset],
+    [answerState, handleChoiceResolution, showReset, triggerHaptic],
+  );
+
+  const handleDragStart = useCallback(
+    (_event: DragStartEvent) => {
+      triggerHaptic(15);
+    },
+    [triggerHaptic],
+  );
+
+  const handleDragOver = useCallback(
+    (event: DragOverEvent) => {
+      const overId = event.over?.id ? String(event.over.id) : null;
+
+      if (overId === 'answer-zone' && lastOverRef.current !== 'answer-zone') {
+        triggerHaptic([0, 20]);
+        lastOverRef.current = 'answer-zone';
+      } else if (overId !== 'answer-zone' && lastOverRef.current !== null) {
+        lastOverRef.current = null;
+      }
+    },
+    [triggerHaptic],
   );
 
   const startGame = () => {
@@ -509,7 +550,12 @@ function StreakPageContent() {
             )}
           </motion.div>
 
-          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <DndContext
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+          >
             <DropZone
               answerState={answerState}
               prompt={t.streak.dragPrompt}
