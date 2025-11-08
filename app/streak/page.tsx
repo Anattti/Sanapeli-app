@@ -128,6 +128,7 @@ function DropZone({
       }`}
       animate={{ scale: isOver && answerState === 'default' ? 1.02 : 1 }}
       data-testid="streak-dropzone"
+      style={{ touchAction: 'none' }}
     >
       <p className="text-lg md:text-xl font-semibold">{dropText}</p>
       {answerState === 'incorrect' && correctAnswer && (
@@ -337,6 +338,7 @@ function StreakPageContent() {
           if (reachedNewBest) {
             setBestStreak(nextStreak);
             setIsNewBest(true);
+            triggerHaptic([0, 35, 90]);
           } else {
             setIsNewBest(false);
           }
@@ -357,6 +359,7 @@ function StreakPageContent() {
         setStreak(0);
         setIsNewBest(false);
         setShowReset(true);
+        triggerHaptic([0, 50, 120, 200]);
         saveStreakStats({
           current: 0,
           best: bestStreak,
@@ -364,7 +367,7 @@ function StreakPageContent() {
         updateWeight(currentWord, false, categoryWords);
       }
     },
-    [currentWord, selectedCategory, bestStreak, loadNextWord, streak],
+    [currentWord, selectedCategory, bestStreak, loadNextWord, streak, triggerHaptic],
   );
 
   const handleDragEnd = useCallback(
