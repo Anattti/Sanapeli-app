@@ -8,6 +8,7 @@ export const translations: Record<Language, Translations> = {
       practice: 'Harjoittele',
       play: 'Pelaa',
       challenge: 'Haaste',
+      streak: 'Streak-tila',
       switchLanguage: 'EN',
     },
     practice: {
@@ -36,6 +37,17 @@ export const translations: Record<Language, Translations> = {
       selectCategory: 'Valitse kategoria',
       startGame: 'Aloita haaste',
     },
+    streak: {
+      title: 'Streak-tila',
+      description: 'Vedä oikea kortti ylös jatkaaksesi putkea.',
+      start: 'Aloita streak',
+      dragPrompt: 'Vedä oikea kortti tähän',
+      current: 'Nykyinen putki',
+      best: 'Paras putki',
+      newBest: 'Uusi ennätys! 🎉',
+      streakLost: 'Putki katkesi!',
+      retry: 'Yritä uudestaan',
+    },
     results: {
       title: 'Tulokset',
       scoreLabel: 'Pisteesi',
@@ -57,6 +69,7 @@ export const translations: Record<Language, Translations> = {
       practice: 'Practice',
       play: 'Play',
       challenge: 'Challenge',
+      streak: 'Streak Mode',
       switchLanguage: 'FI',
     },
     practice: {
@@ -84,6 +97,17 @@ export const translations: Record<Language, Translations> = {
       progress: 'Progress',
       selectCategory: 'Select Category',
       startGame: 'Start Challenge',
+    },
+    streak: {
+      title: 'Streak Mode',
+      description: 'Drag the correct card up to keep your streak alive.',
+      start: 'Start streak',
+      dragPrompt: 'Drag the correct card here',
+      current: 'Current streak',
+      best: 'Best streak',
+      newBest: 'New record! 🎉',
+      streakLost: 'Streak broke!',
+      retry: 'Try again',
     },
     results: {
       title: 'Results',

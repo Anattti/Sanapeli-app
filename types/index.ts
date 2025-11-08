@@ -15,6 +15,16 @@ export interface GameProgress {
   incorrectWords: string[]; // Englannin sanat
 }
 
+export interface StreakRound {
+  word: Word;
+  choices: string[];
+}
+
+export interface StreakStats {
+  current: number;
+  best: number;
+}
+
 export interface Translations {
   menu: {
     title: string;
@@ -22,6 +32,7 @@ export interface Translations {
     practice: string;
     play: string;
     challenge: string;
+    streak: string;
     switchLanguage: string;
   };
   practice: {
@@ -49,6 +60,17 @@ export interface Translations {
     progress: string;
     selectCategory: string;
     startGame: string;
+  };
+  streak: {
+    title: string;
+    description: string;
+    start: string;
+    dragPrompt: string;
+    current: string;
+    best: string;
+    newBest: string;
+    streakLost: string;
+    retry: string;
   };
   results: {
     title: string;

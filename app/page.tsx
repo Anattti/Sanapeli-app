@@ -119,6 +119,14 @@ export default function Home() {
             </Button>
             
             <Button
+              onClick={() => router.push('/streak')}
+              variant="danger"
+              size="large"
+            >
+              🔥 {t.menu.streak}
+            </Button>
+            
+            <Button
               onClick={() => router.push('/challenge')}
               variant="success"
               size="large"

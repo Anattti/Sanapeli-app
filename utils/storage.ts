@@ -1,4 +1,4 @@
-import { Language, GameProgress } from '@/types';
+import { Language, GameProgress, StreakStats } from '@/types';
 
 // Type guard LocalStorage-datalle
 function isValidLanguage(value: unknown): value is Language {
@@ -129,6 +129,45 @@ export function saveBestScore(score: number): void {
     }
   } catch (error) {
     console.error('Error saving best score to localStorage:', error);
+  }
+}
+
+// Streak-tilan tiedot
+export function getStreakStats(): StreakStats {
+  if (typeof window === 'undefined') {
+    return { current: 0, best: 0 };
+  }
+
+  try {
+    const saved = localStorage.getItem('streakStats');
+    if (saved) {
+      const parsed = JSON.parse(saved) as Partial<StreakStats>;
+      if (
+        parsed &&
+        typeof parsed === 'object' &&
+        typeof parsed.current === 'number' &&
+        typeof parsed.best === 'number'
+      ) {
+        return {
+          current: parsed.current,
+          best: parsed.best,
+        };
+      }
+    }
+  } catch (error) {
+    console.error('Error reading streak stats from localStorage:', error);
+  }
+
+  return { current: 0, best: 0 };
+}
+
+export function saveStreakStats(stats: StreakStats): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    localStorage.setItem('streakStats', JSON.stringify(stats));
+  } catch (error) {
+    console.error('Error saving streak stats to localStorage:', error);
   }
 }
 
