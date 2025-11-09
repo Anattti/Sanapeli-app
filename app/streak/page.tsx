@@ -1,6 +1,7 @@
 'use client';
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState, Suspense } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   DndContext,
@@ -277,6 +278,7 @@ function areEqual(prev, next) {
 
 function StreakPageContent() {
   const { t } = useLanguage();
+  const router = useRouter();
 
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [gameStarted, setGameStarted] = useState(false);
@@ -293,6 +295,7 @@ function StreakPageContent() {
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
   const [isNewBest, setIsNewBest] = useState(false);
+  const [lastCorrectAnswer, setLastCorrectAnswer] = useState<string | null>(null);
 
   const timeoutRef = useRef<number | null>(null);
   const lastOverRef = useRef<string | null>(null);
@@ -389,6 +392,7 @@ function StreakPageContent() {
     setSelectedChoice(null);
     setShowReset(false);
     setIsNewBest(false);
+    setLastCorrectAnswer(null);
   }, [selectedCategory]);
 
   const handleChoiceResolution = useCallback(
@@ -406,6 +410,7 @@ function StreakPageContent() {
       if (isCorrect) {
         setAnswerState('correct');
         setLastStreak(0);
+        setLastCorrectAnswer(null);
         setStreak(prev => {
           const nextStreak = prev + 1;
           const reachedNewBest = nextStreak > bestStreak;
@@ -433,6 +438,7 @@ function StreakPageContent() {
         setStreak(0);
         setIsNewBest(false);
         setShowReset(true);
+        setLastCorrectAnswer(correct);
         triggerHaptic([0, 50, 120, 200]);
         saveStreakStats({
           current: 0,
@@ -503,6 +509,7 @@ function StreakPageContent() {
     setAnswerState('default');
     setSelectedChoice(null);
     setLastStreak(0);
+    setLastCorrectAnswer(null);
     loadNextWord();
   };
 
@@ -638,9 +645,30 @@ function StreakPageContent() {
                 {t.streak.current}: <strong>{lastStreak}</strong> • {t.streak.best}:{' '}
                 <strong>{bestStreak}</strong>
               </p>
-              <Button onClick={handleRestart} variant="secondary" size="large">
-                🔁 {t.streak.retry}
-              </Button>
+              {lastCorrectAnswer && (
+                <p className="text-gray-600 mb-6">
+                  {t.challenge.showAnswer}{' '}
+                  <span className="font-semibold text-gray-900">{lastCorrectAnswer}</span>
+                </p>
+              )}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Button
+                  onClick={handleRestart}
+                  variant="secondary"
+                  size="large"
+                  className="w-full sm:w-auto"
+                >
+                  🔁 {t.streak.retry}
+                </Button>
+                <Button
+                  onClick={() => router.push('/')}
+                  variant="primary"
+                  size="large"
+                  className="w-full sm:w-auto"
+                >
+                  🏠 {t.common.backToMenu}
+                </Button>
+              </div>
             </motion.div>
           </motion.div>
         )}
