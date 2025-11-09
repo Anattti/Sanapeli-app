@@ -5,8 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useEffect, useState, Suspense } from 'react';
 import Button from '@/components/Button';
-import LanguageToggle from '@/components/LanguageToggle';
 import PageTransition from '@/components/PageTransition';
+import ScreenHeader from '@/components/ScreenHeader';
 import { getProgress, clearProgress, saveBestScore } from '@/utils/storage';
 import { calculatePercentage, getFeedbackLevel, getFeedbackEmoji } from '@/utils/gameLogic';
 
@@ -68,12 +68,9 @@ function ResultsPageContent() {
   
   return (
     <PageTransition>
-      <div className="min-h-screen p-4 md:p-8 flex flex-col items-center justify-center relative">
-        {/* Kielivalinta */}
-        <div className="absolute top-4 right-4 md:top-8 md:right-8 z-10">
-          <LanguageToggle variant="header" />
-        </div>
-        
+      <div className="min-h-screen p-4 md:p-8 flex flex-col relative">
+        <ScreenHeader className="mb-8" />
+
         {/* Confetti-animaatio */}
         {showConfetti && (
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -101,13 +98,13 @@ function ResultsPageContent() {
             ))}
           </div>
         )}
-        
-        <motion.div
-          className="max-w-2xl w-full text-center"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
+        <div className="flex-1 flex items-center justify-center">
+          <motion.div
+            className="max-w-2xl w-full text-center"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
           {/* Otsikko */}
           <h1 className="text-3xl md:text-5xl font-bold text-gray-800 mb-8">
             {t.results.title}
@@ -222,6 +219,7 @@ function ResultsPageContent() {
             </Button>
           </motion.div>
         </motion.div>
+        </div>
       </div>
     </PageTransition>
   );

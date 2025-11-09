@@ -38,9 +38,7 @@ export default function RootLayout({
   return (
     <html lang="fi">
       <body className={`${poppins.variable} antialiased font-sans`}>
-        <LanguageProvider>
-          {children}
-        </LanguageProvider>
+        <LanguageProvider>{children}</LanguageProvider>
         <Analytics />
       </body>
     </html>

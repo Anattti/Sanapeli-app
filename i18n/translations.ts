@@ -2,6 +2,9 @@ import { Translations, Language } from '@/types';
 
 export const translations: Record<Language, Translations> = {
   fi: {
+    common: {
+      backToMenu: 'Takaisin valikkoon',
+    },
     menu: {
       title: 'Opi englantia emojeilla!',
       subtitle: 'Hauska tapa oppia sanastoa',
@@ -63,6 +66,9 @@ export const translations: Record<Language, Translations> = {
     },
   },
   en: {
+    common: {
+      backToMenu: 'Back to Menu',
+    },
     menu: {
       title: 'Learn English with Emojis!',
       subtitle: 'Fun way to learn vocabulary',

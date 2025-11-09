@@ -4,12 +4,12 @@ import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useState, useEffect, useMemo, Suspense } from 'react';
-import LanguageToggle from '@/components/LanguageToggle';
 import GameHUD from '@/components/GameHUD';
 import ChoiceButton from '@/components/ChoiceButton';
 import CategorySelector from '@/components/CategorySelector';
 import Button from '@/components/Button';
 import PageTransition from '@/components/PageTransition';
+import ScreenHeader from '@/components/ScreenHeader';
 import { getCategories, getWordsByCategory } from '@/data/words';
 import { Word } from '@/types';
 import {
@@ -140,11 +140,8 @@ function PlayPageContent() {
     return (
       <PageTransition>
         <div className="min-h-screen p-4 md:p-8 flex flex-col">
-          {/* Kielivalinta */}
-          <div className="absolute top-4 right-4 md:top-8 md:right-8 z-10">
-            <LanguageToggle variant="header" />
-          </div>
-          
+          <ScreenHeader className="mb-8" />
+
           <div className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full">
             <motion.div
               initial={{ y: -20, opacity: 0 }}
@@ -185,10 +182,13 @@ function PlayPageContent() {
   if (!currentWord) {
     return (
       <PageTransition>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-6xl mb-4">🎮</div>
-            <p className="text-xl text-gray-600">Ladataan peliä...</p>
+        <div className="min-h-screen p-4 md:p-8 flex flex-col">
+          <ScreenHeader className="mb-8" />
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-6xl mb-4">🎮</div>
+              <p className="text-xl text-gray-600">Ladataan peliä...</p>
+            </div>
           </div>
         </div>
       </PageTransition>
@@ -198,10 +198,7 @@ function PlayPageContent() {
   return (
     <PageTransition>
       <div className="min-h-screen p-4 md:p-8 flex flex-col">
-        {/* Kielivalinta */}
-        <div className="absolute top-4 right-4 md:top-8 md:right-8 z-10">
-          <LanguageToggle variant="header" />
-        </div>
+        <ScreenHeader className="mb-6" />
         
         {/* Pelin sisältö */}
         <div className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full">

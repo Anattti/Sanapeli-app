@@ -1,18 +1,15 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useState, useMemo } from 'react';
-import Button from '@/components/Button';
-import LanguageToggle from '@/components/LanguageToggle';
 import EmojiCard from '@/components/EmojiCard';
 import CategorySelector from '@/components/CategorySelector';
 import PageTransition from '@/components/PageTransition';
+import ScreenHeader from '@/components/ScreenHeader';
 import { getCategories, getWordsByCategory } from '@/data/words';
 
 export default function PracticePage() {
-  const router = useRouter();
   const { t } = useLanguage();
   
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -22,18 +19,7 @@ export default function PracticePage() {
   return (
     <PageTransition>
       <div className="min-h-screen p-4 md:p-8 relative">
-        {/* Ylätunniste */}
-        <div className="flex items-center justify-between mb-8">
-          <Button
-            onClick={() => router.push('/')}
-            variant="secondary"
-            size="small"
-          >
-            ← {t.practice.backToMenu}
-          </Button>
-          
-          <LanguageToggle variant="header" />
-        </div>
+        <ScreenHeader className="mb-8" />
         
         {/* Otsikko */}
         <motion.div

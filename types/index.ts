@@ -26,6 +26,9 @@ export interface StreakStats {
 }
 
 export interface Translations {
+  common: {
+    backToMenu: string;
+  };
   menu: {
     title: string;
     subtitle: string;

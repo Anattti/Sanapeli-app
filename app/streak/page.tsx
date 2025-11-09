@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState, Suspense } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   DndContext,
@@ -16,7 +16,6 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { Word } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
-import LanguageToggle from '@/components/LanguageToggle';
 import CategorySelector from '@/components/CategorySelector';
 import Button from '@/components/Button';
 import PageTransition from '@/components/PageTransition';
@@ -27,6 +26,7 @@ import {
   updateWeight,
 } from '@/utils/gameLogic';
 import { getStreakStats, saveStreakStats } from '@/utils/storage';
+import ScreenHeader from '@/components/ScreenHeader';
 
 type ChoiceVisualState = 'default' | 'correct' | 'incorrect' | 'disabled';
 
@@ -88,9 +88,11 @@ interface DropZoneProps {
   showAnswerLabel: string;
   correctAnswer: string | null;
   disabled: boolean;
+  emoji: string | null;
+  word: string;
 }
 
-function DropZone({
+const DropZone = memo(function DropZone({
   answerState,
   prompt,
   successText,
@@ -98,6 +100,8 @@ function DropZone({
   showAnswerLabel,
   correctAnswer,
   disabled,
+  emoji,
+  word,
 }: DropZoneProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: 'answer-zone',
@@ -105,7 +109,7 @@ function DropZone({
   });
 
   const baseStyles =
-    'w-full max-w-2xl h-32 md:h-40 border-4 border-dashed rounded-3xl flex flex-col items-center justify-center transition-all duration-200 px-6 text-center';
+    'w-full max-w-2xl border-4 border-dashed rounded-3xl flex flex-col items-center justify-center transition-all duration-200 px-6 py-6 md:py-8 text-center space-y-3';
 
   const stateStyles = {
     default: 'border-indigo-300 text-indigo-600 bg-indigo-50/40',
@@ -130,16 +134,28 @@ function DropZone({
       data-testid="streak-dropzone"
       style={{ touchAction: 'none' }}
     >
-      <p className="text-lg md:text-xl font-semibold">{dropText}</p>
-      {answerState === 'incorrect' && correctAnswer && (
-        <p className="mt-2 text-sm md:text-base text-gray-700">
-          {showAnswerLabel}{' '}
-          <span className="font-semibold text-gray-900">{correctAnswer}</span>
-        </p>
-      )}
+      <div className="flex flex-col items-center gap-3">
+        {emoji ? (
+          <>
+            <span className="text-6xl md:text-7xl">{emoji}</span>
+            <span className="text-2xl md:text-3xl font-semibold text-gray-800">
+              {word}
+            </span>
+          </>
+        ) : (
+          <span className="text-3xl md:text-4xl font-bold text-gray-800">{word}</span>
+        )}
+        <p className="text-base md:text-lg font-semibold">{dropText}</p>
+        {answerState === 'incorrect' && correctAnswer && (
+          <p className="text-sm md:text-base text-gray-700">
+            {showAnswerLabel}{' '}
+            <span className="font-semibold text-gray-900">{correctAnswer}</span>
+          </p>
+        )}
+      </div>
     </motion.div>
   );
-}
+});
 
 interface DraggableChoiceProps {
   id: string;
@@ -149,7 +165,22 @@ interface DraggableChoiceProps {
   index: number;
 }
 
-function DraggableChoice({ id, text, state, disabled, index }: DraggableChoiceProps) {
+const PALETTE_CLASSES = [
+  'bg-gradient-to-br from-orange-200/90 to-orange-300 text-orange-900',
+  'bg-gradient-to-br from-pink-200/90 to-pink-300 text-rose-900',
+  'bg-gradient-to-br from-yellow-200/90 to-yellow-300 text-amber-900',
+  'bg-gradient-to-br from-blue-200/90 to-blue-300 text-blue-900',
+  'bg-gradient-to-br from-purple-200/90 to-purple-300 text-purple-900',
+  'bg-gradient-to-br from-green-200/90 to-green-300 text-emerald-900',
+];
+
+const DraggableChoice = memo(function DraggableChoice({
+  id,
+  text,
+  state,
+  disabled,
+  index,
+}: DraggableChoiceProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id,
     data: { choice: text },
@@ -168,16 +199,9 @@ function DraggableChoice({ id, text, state, disabled, index }: DraggableChoicePr
       };
 
   const baseStyles =
-    'w-full px-6 py-5 rounded-3xl font-semibold text-lg md:text-xl select-none text-center transition-all duration-200 border-2';
+    'w-full px-6 py-5 rounded-3xl font-semibold text-lg md:text-xl select-none text-center transition-all duration-200 border-2 border-transparent shadow-soft';
 
-  const paletteClasses = [
-    'bg-gradient-to-br from-[#DBEAFE] via-[#BFDBFE] to-[#EFF6FF] border-[#93C5FD] text-[#1D4ED8] shadow-[0_18px_38px_-24px_rgba(59,130,246,0.45)]',
-    'bg-gradient-to-br from-[#EDE9FE] via-[#DDD6FE] to-[#F5F3FF] border-[#C4B5FD] text-[#5B21B6] shadow-[0_18px_38px_-24px_rgba(129,140,248,0.45)]',
-    'bg-gradient-to-br from-[#FCE7F3] via-[#FBCFE8] to-[#FFF1F2] border-[#F9A8D4] text-[#BE185D] shadow-[0_18px_38px_-24px_rgba(236,72,153,0.45)]',
-    'bg-gradient-to-br from-[#DCFCE7] via-[#BBF7D0] to-[#ECFDF5] border-[#86EFAC] text-[#166534] shadow-[0_18px_38px_-24px_rgba(16,185,129,0.45)]',
-  ];
-
-  const paletteClass = paletteClasses[index % paletteClasses.length];
+  const paletteClass = PALETTE_CLASSES[index % PALETTE_CLASSES.length];
 
   const stateStyles: Record<ChoiceVisualState, string> = {
     default:
@@ -193,8 +217,19 @@ function DraggableChoice({ id, text, state, disabled, index }: DraggableChoicePr
   const getAnimation = () => {
     if (state === 'correct') {
       return {
-        scale: [1, 1.05, 1.02],
-        transition: { duration: 0.35 },
+        scale: [1, 1.14, 0.9, 1.04, 1],
+        opacity: [1, 0.96, 0.85, 0.96, 1],
+        filter: [
+          'drop-shadow(0 18px 38px rgba(16, 185, 129, 0.25))',
+          'drop-shadow(0 26px 55px rgba(16, 185, 129, 0.35))',
+          'drop-shadow(0 10px 24px rgba(16, 185, 129, 0.2))',
+          'drop-shadow(0 18px 38px rgba(16, 185, 129, 0.28))',
+          'drop-shadow(0 18px 38px rgba(16, 185, 129, 0.25))',
+        ],
+        transition: {
+          duration: 0.5,
+          times: [0, 0.28, 0.55, 0.78, 1],
+        },
       };
     }
     if (state === 'incorrect') {
@@ -230,7 +265,15 @@ function DraggableChoice({ id, text, state, disabled, index }: DraggableChoicePr
       </motion.div>
     </div>
   );
-}
+},
+function areEqual(prev, next) {
+  return (
+    prev.text === next.text &&
+    prev.state === next.state &&
+    prev.disabled === next.disabled &&
+    prev.index === next.index
+  );
+});
 
 function StreakPageContent() {
   const { t } = useLanguage();
@@ -286,6 +329,37 @@ function StreakPageContent() {
     if (!currentWord) return null;
     return currentWord.article ? `${currentWord.article} ${currentWord.en}` : currentWord.en;
   }, [currentWord]);
+
+  const isDragDisabled = answerState !== 'default' || showReset;
+
+  const getChoiceState = useCallback(
+    (choice: string): ChoiceVisualState => {
+      if (answerState === 'default') return 'default';
+      if (choice === selectedChoice) {
+        return answerState === 'correct' ? 'correct' : 'incorrect';
+      }
+      if (answerState === 'incorrect' && choice === correctAnswer) {
+        return 'correct';
+      }
+      return 'disabled';
+    },
+    [answerState, correctAnswer, selectedChoice],
+  );
+
+  const choiceElements = useMemo(
+    () =>
+      choices.map((choice, index) => (
+        <DraggableChoice
+          key={choice}
+          id={choice}
+          text={choice}
+          state={getChoiceState(choice)}
+          disabled={isDragDisabled}
+          index={index}
+        />
+      )),
+    [choices, getChoiceState, isDragDisabled],
+  );
 
   const loadNextWord = useCallback(() => {
     if (timeoutRef.current !== null) {
@@ -437,9 +511,7 @@ function StreakPageContent() {
     return (
       <PageTransition>
         <div className="min-h-screen p-4 md:p-8 flex flex-col">
-          <div className="absolute top-4 right-4 md:top-8 md:right-8 z-10">
-            <LanguageToggle variant="header" />
-          </div>
+          <ScreenHeader className="mb-8" />
 
           <div className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full">
             <motion.div
@@ -492,37 +564,25 @@ function StreakPageContent() {
   if (!currentWord) {
     return (
       <PageTransition>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-6xl mb-4">⏳</div>
-            <p className="text-xl text-gray-600">Ladataan peliä...</p>
+        <div className="min-h-screen p-4 md:p-8 flex flex-col">
+          <ScreenHeader className="mb-8" />
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-6xl mb-4">⏳</div>
+              <p className="text-xl text-gray-600">Ladataan peliä...</p>
+            </div>
           </div>
         </div>
       </PageTransition>
     );
   }
 
-  const isDragDisabled = answerState !== 'default' || showReset;
-
-  const getChoiceState = (choice: string): ChoiceVisualState => {
-    if (answerState === 'default') return 'default';
-    if (choice === selectedChoice) {
-      return answerState === 'correct' ? 'correct' : 'incorrect';
-    }
-    if (answerState === 'incorrect' && choice === correctAnswer) {
-      return 'correct';
-    }
-    return 'disabled';
-  };
-
   return (
     <PageTransition>
       <div className="min-h-screen p-4 md:p-8 flex flex-col">
-        <div className="absolute top-4 right-4 md:top-8 md:right-8 z-10">
-          <LanguageToggle variant="header" />
-        </div>
+        <ScreenHeader className="mb-6" />
 
-        <div className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full">
+        <div className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full gap-8">
           <StreakHUD
             current={streak}
             best={bestStreak}
@@ -531,27 +591,6 @@ function StreakPageContent() {
             currentLabel={t.streak.current}
             newBestLabel={t.streak.newBest}
           />
-
-          <motion.div
-            key={currentWord.en}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 120, damping: 15 }}
-            className="flex flex-col items-center mb-10 select-none"
-          >
-            {currentWord.emoji ? (
-              <>
-                <span className="text-8xl md:text-9xl mb-4">{currentWord.emoji}</span>
-                <span className="text-2xl md:text-3xl font-semibold text-gray-700">
-                  {currentWord.fi}
-                </span>
-              </>
-            ) : (
-              <span className="text-4xl md:text-5xl font-bold text-gray-800">
-                {currentWord.fi}
-              </span>
-            )}
-          </motion.div>
 
           <DndContext
             sensors={sensors}
@@ -567,19 +606,12 @@ function StreakPageContent() {
               showAnswerLabel={t.challenge.showAnswer}
               correctAnswer={correctAnswer}
               disabled={isDragDisabled}
+              emoji={currentWord.emoji ?? null}
+              word={currentWord.fi}
             />
 
-            <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl">
-              {choices.map((choice, index) => (
-                <DraggableChoice
-                  key={choice}
-                  id={choice}
-                  text={choice}
-                  state={getChoiceState(choice)}
-                  disabled={isDragDisabled}
-                  index={index}
-                />
-              ))}
+            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-2xl">
+              {choiceElements}
             </div>
           </DndContext>
         </div>
