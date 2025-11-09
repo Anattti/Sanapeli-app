@@ -97,7 +97,9 @@ function PlayPageContent() {
       updateWeight(currentWord, false, categoryWords);
     }
     
-    // Siirry seuraavaan sanaan 1.5 sekunnin kuluttua
+    const delay = isCorrect ? 1500 : 3000;
+
+    // Siirry seuraavaan sanaan: oikein 1.5 s, väärin 3 s
     setTimeout(() => {
       if (currentIndex + 1 < gameWords.length) {
         setCurrentIndex(prev => prev + 1);
@@ -115,7 +117,7 @@ function PlayPageContent() {
         saveProgress(progress);
         router.push('/results?mode=play');
       }
-    }, 1500);
+    }, delay);
   };
   
   const getChoiceState = (choice: string) => {

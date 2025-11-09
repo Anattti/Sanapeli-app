@@ -121,28 +121,64 @@ export default function CategorySelector({
     updateScrollIndicators();
   }, [items, updateScrollIndicators]);
 
+  const ArrowIndicator = ({
+    direction,
+    visible,
+  }: {
+    direction: 'left' | 'right';
+    visible: boolean;
+  }) => {
+    const isLeft = direction === 'left';
+    const gradientClass = isLeft
+      ? 'left-0 bg-gradient-to-r'
+      : 'right-0 bg-gradient-to-l';
+    const wobble = isLeft ? [-2, 2, -2] : [2, -2, 2];
+
+    return (
+      <motion.div
+        initial={false}
+        animate={{
+          opacity: visible ? 1 : 0,
+          x: visible ? 0 : isLeft ? -12 : 12,
+        }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className={`pointer-events-none absolute inset-y-2 ${gradientClass} w-12 sm:w-16 rounded-3xl from-white via-white/70 to-transparent`}
+      >
+        <motion.span
+          aria-hidden
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 grid h-8 w-8 place-items-center rounded-full bg-white/80 shadow-soft ring-1 ring-white/60 text-indigo-400"
+          animate={visible ? { x: wobble } : { x: 0 }}
+          transition={{
+            duration: 1.2,
+            repeat: visible ? Infinity : 0,
+            ease: 'easeInOut',
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-4 w-4"
+          >
+            {isLeft ? (
+              <path d="M15 18l-6-6 6-6" />
+            ) : (
+              <path d="M9 6l6 6-6 6" />
+            )}
+          </svg>
+        </motion.span>
+      </motion.div>
+    );
+  };
+
   return (
     <div className="relative w-full max-w-5xl mx-auto mb-8">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: canScrollLeft ? 1 : 0 }}
-        transition={{ duration: 0.25 }}
-        className="pointer-events-none absolute inset-y-0 left-0 w-10 sm:w-16 bg-gradient-to-r from-white via-white/60 to-transparent rounded-l-3xl grid place-items-center"
-      >
-        <span className="text-lg sm:text-xl text-indigo-400" aria-hidden>
-          ‹
-        </span>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: canScrollRight ? 1 : 0 }}
-        transition={{ duration: 0.25 }}
-        className="pointer-events-none absolute inset-y-0 right-0 w-10 sm:w-16 bg-gradient-to-l from-white via-white/60 to-transparent rounded-r-3xl grid place-items-center"
-      >
-        <span className="text-lg sm:text-xl text-indigo-400" aria-hidden>
-          ›
-        </span>
-      </motion.div>
+      <ArrowIndicator direction="left" visible={canScrollLeft} />
+      <ArrowIndicator direction="right" visible={canScrollRight} />
 
       <motion.div
         layout
