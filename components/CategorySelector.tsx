@@ -35,7 +35,6 @@ export default function CategorySelector({
       name: language === 'fi' ? category.nameFi : category.nameEn,
       emoji: category.emoji,
       count: category.count,
-      tone: category.tone,
     }));
 
     return [
@@ -44,7 +43,6 @@ export default function CategorySelector({
         name: language === 'fi' ? 'Kaikki sanat' : 'All words',
         emoji: '📚',
         count: getWordsByCategory('all').length,
-        tone: 'indigo',
       },
       ...translatedCategories,
     ];
