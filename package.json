@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest"
@@ -34,6 +34,5 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.0.8"
-  },
-     "build": "next build --webpack"
+  }
 }
