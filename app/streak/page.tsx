@@ -666,5 +666,3 @@ export default function StreakPage() {
   );
 }
 
-export { StreakPageContent };
-
