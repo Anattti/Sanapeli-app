@@ -13,10 +13,12 @@ export default function PracticePage() {
   const { t } = useLanguage();
   const shouldReduceMotion = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
+    setIsChecked(true);
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
@@ -103,7 +105,7 @@ export default function PracticePage() {
             className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 w-full"
             key={selectedCategory}
             initial="hidden"
-            animate="visible"
+            animate={isChecked ? "visible" : "hidden"}
             variants={{
               hidden: { opacity: 0 },
               visible: {
