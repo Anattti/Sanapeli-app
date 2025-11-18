@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import EmojiCard from '@/components/EmojiCard';
 import CategorySelector from '@/components/CategorySelector';
 import PageTransition from '@/components/PageTransition';
@@ -12,36 +12,45 @@ import { getCategories, getWordsByCategory } from '@/data/words';
 export default function PracticePage() {
   const { t } = useLanguage();
   const shouldReduceMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const [selectedCategory, setSelectedCategory] = useState('all');
   const categories = useMemo(() => getCategories(), []);
   const displayedWords = useMemo(() => getWordsByCategory(selectedCategory), [selectedCategory]);
 
+  // Disable staggering on mobile for faster load
+  const staggerDelay = isMobile || shouldReduceMotion ? 0 : 0.05;
+
   return (
     <PageTransition>
       <div className="min-h-screen p-4 md:p-8 relative overflow-hidden">
-        {/* Animated Background Elements - Hidden on mobile */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none hidden md:block">
-          {!shouldReduceMotion && (
-            <>
-              <motion.div
-                className="absolute top-20 right-10 text-6xl opacity-20"
-                animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
-                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-              >
-                🧠
-              </motion.div>
-              <motion.div
-                className="absolute bottom-40 left-10 text-8xl opacity-10"
-                animate={{ y: [0, -30, 0], rotate: [0, -5, 0] }}
-                transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              >
-                💡
-              </motion.div>
-            </>
-          )}
-          <div className="absolute top-0 left-0 w-full h-full bg-[url('/grid-pattern.svg')] opacity-5"></div>
-        </div>
+        {/* Animated Background Elements - Strictly Desktop Only */}
+        {!isMobile && !shouldReduceMotion && (
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <motion.div
+              className="absolute top-20 right-10 text-6xl opacity-20"
+              animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
+              transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+            >
+              🧠
+            </motion.div>
+            <motion.div
+              className="absolute bottom-40 left-10 text-8xl opacity-10"
+              animate={{ y: [0, -30, 0], rotate: [0, -5, 0] }}
+              transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            >
+              💡
+            </motion.div>
+            <div className="absolute top-0 left-0 w-full h-full bg-[url('/grid-pattern.svg')] opacity-5"></div>
+          </div>
+        )}
 
         <ScreenHeader className="mb-8 relative z-10" />
 
@@ -59,7 +68,7 @@ export default function PracticePage() {
               transition={{ type: "spring", stiffness: 260, damping: 20 }}
               className="inline-block mb-2"
             >
-              <span className={`text-6xl md:text-7xl filter drop-shadow-lg ${!shouldReduceMotion ? 'animate-bounce-in' : ''}`}>
+              <span className={`text-6xl md:text-7xl filter drop-shadow-lg ${!shouldReduceMotion && !isMobile ? 'animate-bounce-in' : ''}`}>
                 🧠
               </span>
             </motion.div>
@@ -100,7 +109,7 @@ export default function PracticePage() {
               visible: {
                 opacity: 1,
                 transition: {
-                  staggerChildren: shouldReduceMotion ? 0 : 0.05
+                  staggerChildren: staggerDelay
                 }
               }
             }}
@@ -117,6 +126,7 @@ export default function PracticePage() {
                     transition: { type: "spring", stiffness: 200, damping: 15 }
                   }
                 }}
+                style={{ willChange: 'transform, opacity' }}
               >
                 <EmojiCard
                   emoji={word.emoji}
@@ -132,4 +142,3 @@ export default function PracticePage() {
     </PageTransition>
   );
 }
-

@@ -20,52 +20,52 @@ const cardColors = [
   'bg-gradient-to-br from-green-200 to-green-300', // Green
 ];
 
-export default function EmojiCard({ 
-  emoji, 
-  englishWord, 
-  finnishWord, 
+export default function EmojiCard({
+  emoji,
+  englishWord,
+  finnishWord,
   article,
-  onClick 
+  onClick
 }: EmojiCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
-  
+
   const handleClick = () => {
     setIsFlipped(!isFlipped);
     onClick?.();
   };
-  
+
   // Valitse väri hashin perusteella (konsistentti)
   const colorIndex = (emoji || finnishWord).charCodeAt(0) % cardColors.length;
   const bgColor = cardColors[colorIndex];
-  
+
   // Jos ei ole emojia, näytä vain teksti etupuolella
   const hasEmoji = emoji && emoji.length > 0;
-  
+
   // Muodosta englanninkielinen sana artikkelilla
   const englishWithArticle = article ? `${article} ${englishWord}` : englishWord;
-  
+
   return (
     <div
-      className="relative w-full aspect-square cursor-pointer"
+      className="relative w-full aspect-square cursor-pointer group perspective-1000"
       onClick={handleClick}
     >
       <motion.div
         className="relative w-full h-full"
         animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.5 }}
-        style={{ transformStyle: 'preserve-3d' }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
       >
         {/* Etupuoli - Emoji + suomenkielinen sana TAI pelkkä suomenkielinen sana */}
         <div
-          className={`absolute inset-0 ${bgColor} rounded-2xl shadow-soft flex flex-col items-center justify-center backface-hidden p-4`}
+          className={`absolute inset-0 ${bgColor} rounded-2xl shadow-md group-hover:shadow-lg transition-shadow duration-200 flex flex-col items-center justify-center backface-hidden p-4 border-b-4 border-black/10`}
           style={{ backfaceVisibility: 'hidden' }}
         >
           {hasEmoji ? (
             <>
-              <span className="text-5xl md:text-6xl lg:text-7xl select-none mb-3">
+              <span className="text-5xl md:text-6xl lg:text-7xl select-none mb-3 filter drop-shadow-sm">
                 {emoji}
               </span>
-              <span className="text-lg md:text-xl font-semibold text-gray-700 select-none text-center">
+              <span className="text-lg md:text-xl font-bold text-gray-800 select-none text-center leading-tight">
                 {finnishWord}
               </span>
             </>
@@ -75,16 +75,16 @@ export default function EmojiCard({
             </span>
           )}
         </div>
-        
+
         {/* Takapuoli - Englanninkielinen sana artikkelilla */}
         <div
-          className={`absolute inset-0 ${bgColor} rounded-2xl shadow-soft flex items-center justify-center backface-hidden`}
+          className={`absolute inset-0 ${bgColor} rounded-2xl shadow-md flex items-center justify-center backface-hidden border-b-4 border-black/10`}
           style={{
             backfaceVisibility: 'hidden',
             transform: 'rotateY(180deg)',
           }}
         >
-          <span className="text-2xl md:text-3xl font-bold text-gray-800 select-none px-4 text-center break-words">
+          <span className="text-2xl md:text-3xl font-black text-gray-800 select-none px-4 text-center break-words">
             {englishWithArticle}
           </span>
         </div>
@@ -92,4 +92,3 @@ export default function EmojiCard({
     </div>
   );
 }
-
