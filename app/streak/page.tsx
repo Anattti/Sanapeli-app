@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
   DndContext,
   PointerSensor,
@@ -52,28 +52,46 @@ function StreakHUD({
     <motion.div
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="w-full bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-4 mb-6"
+      className="w-full bg-white/90 backdrop-blur-md rounded-3xl shadow-lg border-2 border-orange-100 p-4 mb-6 relative overflow-hidden"
     >
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-600 font-medium">{currentLabel}</p>
-          <p className="text-3xl font-bold text-gray-800">{current}</p>
+      {/* Background decorative glow */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-orange-200 rounded-full blur-3xl opacity-20 -mr-10 -mt-10 pointer-events-none" />
+
+      <div className="flex items-center justify-between relative z-10">
+        <div className="flex flex-col">
+          <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-1">{currentLabel}</p>
+          <div className="flex items-baseline gap-2">
+            <span className="text-4xl font-black text-gray-800">{current}</span>
+            <span className="text-2xl">🔥</span>
+          </div>
         </div>
-        <div className="text-right">
-          <p className="text-sm text-gray-600 font-medium">{bestLabel}</p>
-          <p className="text-2xl font-semibold text-gray-800">{best}</p>
+
+        <div className="flex flex-col items-end">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">{bestLabel}</p>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-gray-600">{best}</span>
+            <span className="text-xl grayscale opacity-50">🏆</span>
+          </div>
         </div>
       </div>
+
       <AnimatePresence>
         {isNewBest && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="mt-3 text-sm font-semibold text-emerald-600 flex items-center gap-2"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-20"
           >
-            <span>🌟</span>
-            <span>{newBestLabel}</span>
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ repeat: Infinity, duration: 1 }}
+              className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 flex items-center gap-2"
+            >
+              <span>🎉</span>
+              <span>{newBestLabel}</span>
+              <span>🎉</span>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -109,49 +127,70 @@ const DropZone = memo(function DropZone({
     disabled,
   });
 
-  const baseStyles =
-    'w-full max-w-2xl border-4 border-dashed rounded-3xl flex flex-col items-center justify-center transition-all duration-200 px-6 py-6 md:py-8 text-center space-y-3';
-
   const stateStyles = {
-    default: 'border-indigo-300 text-indigo-600 bg-indigo-50/40',
-    correct: 'border-emerald-400 text-emerald-600 bg-emerald-50/70',
-    incorrect: 'border-rose-400 text-rose-600 bg-rose-50/70',
+    default: 'border-orange-300 bg-gradient-to-b from-orange-50 to-white',
+    correct: 'border-emerald-400 bg-emerald-50',
+    incorrect: 'border-rose-400 bg-rose-50',
   } as const;
 
   const dropText =
     answerState === 'correct'
       ? successText
       : answerState === 'incorrect'
-      ? failureText
-      : prompt;
+        ? failureText
+        : prompt;
 
   return (
     <motion.div
       ref={setNodeRef}
-      className={`${baseStyles} ${stateStyles[answerState]} ${
-        isOver && answerState === 'default' ? 'scale-[1.02] shadow-soft' : ''
-      }`}
+      className={`
+        w-full max-w-2xl rounded-[2rem] flex flex-col items-center justify-center 
+        transition-all duration-300 px-6 py-8 md:py-10 text-center space-y-4
+        border-4 border-dashed relative overflow-hidden
+        ${stateStyles[answerState]}
+        ${isOver && answerState === 'default' ? 'scale-[1.02] shadow-xl border-orange-400 bg-orange-100' : 'shadow-sm'}
+      `}
       animate={{ scale: isOver && answerState === 'default' ? 1.02 : 1 }}
       data-testid="streak-dropzone"
       style={{ touchAction: 'none' }}
     >
-      <div className="flex flex-col items-center gap-3">
+      {/* Energy Core Animation */}
+      {answerState === 'default' && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-30">
+          <div className={`w-48 h-48 rounded-full bg-orange-400 blur-3xl ${isOver ? 'animate-pulse' : ''}`} />
+        </div>
+      )}
+
+      <div className="relative z-10 flex flex-col items-center gap-4">
         {emoji ? (
-          <>
-            <span className="text-6xl md:text-7xl">{emoji}</span>
-            <span className="text-2xl md:text-3xl font-semibold text-gray-800">
+          <div className="flex flex-col items-center">
+            <span className="text-7xl md:text-8xl mb-2 filter drop-shadow-lg">{emoji}</span>
+            <span className="text-3xl md:text-4xl font-black text-gray-800 tracking-tight">
               {word}
             </span>
-          </>
+          </div>
         ) : (
-          <span className="text-3xl md:text-4xl font-bold text-gray-800">{word}</span>
+          <span className="text-4xl md:text-5xl font-black text-gray-800">{word}</span>
         )}
-        <p className="text-base md:text-lg font-semibold">{dropText}</p>
+
+        <div className={`
+          px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide
+          ${answerState === 'default' ? 'bg-orange-100 text-orange-700' : ''}
+          ${answerState === 'correct' ? 'bg-emerald-100 text-emerald-700' : ''}
+          ${answerState === 'incorrect' ? 'bg-rose-100 text-rose-700' : ''}
+        `}>
+          {dropText}
+        </div>
+
         {answerState === 'incorrect' && correctAnswer && (
-          <p className="text-sm md:text-base text-gray-700">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-base md:text-lg text-gray-700 bg-white/80 px-4 py-2 rounded-xl"
+          >
             {showAnswerLabel}{' '}
-            <span className="font-semibold text-gray-900">{correctAnswer}</span>
-          </p>
+            <span className="font-bold text-gray-900">{correctAnswer}</span>
+          </motion.div>
         )}
       </div>
     </motion.div>
@@ -165,15 +204,6 @@ interface DraggableChoiceProps {
   disabled: boolean;
   index: number;
 }
-
-const PALETTE_CLASSES = [
-  'bg-gradient-to-br from-orange-200/90 to-orange-300 text-orange-900',
-  'bg-gradient-to-br from-pink-200/90 to-pink-300 text-rose-900',
-  'bg-gradient-to-br from-yellow-200/90 to-yellow-300 text-amber-900',
-  'bg-gradient-to-br from-blue-200/90 to-blue-300 text-blue-900',
-  'bg-gradient-to-br from-purple-200/90 to-purple-300 text-purple-900',
-  'bg-gradient-to-br from-green-200/90 to-green-300 text-emerald-900',
-];
 
 const DraggableChoice = memo(function DraggableChoice({
   id,
@@ -190,53 +220,41 @@ const DraggableChoice = memo(function DraggableChoice({
 
   const dragStyle = transform
     ? {
-        transform: CSS.Translate.toString(transform),
-        transition: isDragging ? 'none' : undefined,
-        touchAction: 'none' as const,
-      }
+      transform: CSS.Translate.toString(transform),
+      transition: isDragging ? 'none' : undefined,
+      touchAction: 'none' as const,
+    }
     : {
-        touchAction: 'none' as const,
-        transition: isDragging ? 'none' : undefined,
-      };
+      touchAction: 'none' as const,
+      transition: isDragging ? 'none' : undefined,
+    };
 
+  // Power Card Styles
   const baseStyles =
-    'w-full px-6 py-5 rounded-3xl font-semibold text-lg md:text-xl select-none text-center transition-all duration-200 border-2 border-transparent shadow-soft';
-
-  const paletteClass = PALETTE_CLASSES[index % PALETTE_CLASSES.length];
+    'w-full px-4 py-6 rounded-2xl font-bold text-lg md:text-xl select-none text-center transition-all duration-200 relative overflow-hidden';
 
   const stateStyles: Record<ChoiceVisualState, string> = {
     default:
-      paletteClass,
+      'bg-white text-gray-800 shadow-md border-b-4 border-gray-200 hover:-translate-y-1 hover:shadow-lg active:border-b-0 active:translate-y-1',
     correct:
-      'bg-gradient-to-r from-emerald-400 to-green-500 text-white border-emerald-500 shadow-lg shadow-emerald-300/60',
+      'bg-emerald-500 text-white shadow-lg border-b-4 border-emerald-700',
     incorrect:
-      'bg-gradient-to-r from-rose-400 to-red-500 text-white border-rose-500 shadow-lg shadow-rose-300/60',
+      'bg-rose-500 text-white shadow-lg border-b-4 border-rose-700',
     disabled:
-      'bg-gray-100 text-gray-400 border-gray-200 shadow-[0_10px_20px_-18px_rgba(75,85,99,0.6)]',
+      'bg-gray-100 text-gray-400 border-gray-200 shadow-none cursor-not-allowed',
   };
 
   const getAnimation = () => {
     if (state === 'correct') {
       return {
-        scale: [1, 1.14, 0.9, 1.04, 1],
-        opacity: [1, 0.96, 0.85, 0.96, 1],
-        filter: [
-          'drop-shadow(0 18px 38px rgba(16, 185, 129, 0.25))',
-          'drop-shadow(0 26px 55px rgba(16, 185, 129, 0.35))',
-          'drop-shadow(0 10px 24px rgba(16, 185, 129, 0.2))',
-          'drop-shadow(0 18px 38px rgba(16, 185, 129, 0.28))',
-          'drop-shadow(0 18px 38px rgba(16, 185, 129, 0.25))',
-        ],
-        transition: {
-          duration: 0.5,
-          times: [0, 0.28, 0.55, 0.78, 1],
-        },
+        scale: [1, 1.1, 1],
+        transition: { duration: 0.4 },
       };
     }
     if (state === 'incorrect') {
       return {
-        x: [0, -10, 10, -6, 6, 0],
-        transition: { duration: 0.35 },
+        x: [0, -5, 5, -5, 5, 0],
+        transition: { duration: 0.4 },
       };
     }
     return {};
@@ -246,39 +264,40 @@ const DraggableChoice = memo(function DraggableChoice({
     <div
       ref={setNodeRef}
       style={dragStyle}
-      className={`w-full ${disabled ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'} ${
-        isDragging ? 'z-50' : ''
-      }`}
+      className={`w-full ${disabled ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'} ${isDragging ? 'z-50' : ''
+        }`}
       {...listeners}
       {...attributes}
       data-testid="streak-choice"
     >
       <motion.div
-        className={`${baseStyles} ${stateStyles[state]} ${
-          isDragging ? 'shadow-xl scale-[1.02]' : ''
-        }`}
-        whileHover={!disabled && state === 'default' ? { scale: 1.03, y: -4 } : undefined}
-        whileTap={!disabled && state === 'default' ? { scale: 0.97 } : undefined}
+        className={`${baseStyles} ${stateStyles[state]} ${isDragging ? 'shadow-2xl scale-110 rotate-2 ring-4 ring-orange-400 ring-opacity-50' : ''
+          }`}
         animate={getAnimation()}
         layout
       >
-        {text}
+        {/* Card Shine Effect */}
+        {!disabled && state === 'default' && (
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/40 to-transparent opacity-50 pointer-events-none" />
+        )}
+        <span className="relative z-10">{text}</span>
       </motion.div>
     </div>
   );
 },
-function areEqual(prev, next) {
-  return (
-    prev.text === next.text &&
-    prev.state === next.state &&
-    prev.disabled === next.disabled &&
-    prev.index === next.index
-  );
-});
+  function areEqual(prev, next) {
+    return (
+      prev.text === next.text &&
+      prev.state === next.state &&
+      prev.disabled === next.disabled &&
+      prev.index === next.index
+    );
+  });
 
 function StreakPageContent() {
   const { t } = useLanguage();
   const router = useRouter();
+  const shouldReduceMotion = useReducedMotion();
 
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [gameStarted, setGameStarted] = useState(false);
@@ -517,49 +536,87 @@ function StreakPageContent() {
   if (!gameStarted) {
     return (
       <PageTransition>
-        <div className="min-h-screen p-4 md:p-8 flex flex-col">
-          <ScreenHeader className="mb-8" />
+        <div className="min-h-screen p-4 md:p-8 flex flex-col relative overflow-hidden">
+          {/* Animated Background Elements - Hidden on mobile */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none hidden md:block">
+            {!shouldReduceMotion && (
+              <>
+                <motion.div
+                  className="absolute top-20 left-10 text-6xl opacity-20"
+                  animate={{ y: [0, -30, 0], scale: [1, 1.1, 1] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  🔥
+                </motion.div>
+                <motion.div
+                  className="absolute bottom-20 right-10 text-8xl opacity-10"
+                  animate={{ y: [0, -50, 0], rotate: [0, 5, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                >
+                  ⚡
+                </motion.div>
+              </>
+            )}
+            <div className="absolute top-0 left-0 w-full h-full bg-[url('/grid-pattern.svg')] opacity-5"></div>
+          </div>
 
-          <div className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full">
+          <ScreenHeader className="mb-8 relative z-10" />
+
+          <div className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full relative z-10">
             <motion.div
-              initial={{ y: -20, opacity: 0 }}
+              initial={{ y: shouldReduceMotion ? 0 : -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               className="text-center mb-8 max-w-3xl"
             >
-              <h1 className="text-3xl md:text-5xl font-bold text-gray-800 mb-4">
+              <motion.div
+                initial={{ scale: shouldReduceMotion ? 1 : 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                className="inline-block mb-4"
+              >
+                <span className={`text-7xl md:text-8xl filter drop-shadow-xl ${!shouldReduceMotion ? 'animate-pulse' : ''}`}>
+                  🔥
+                </span>
+              </motion.div>
+              <h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 mb-4 text-outline">
                 {t.streak.title}
               </h1>
-              <p className="text-lg md:text-xl text-gray-600">
+              <p className="text-lg md:text-xl text-gray-600 font-medium">
                 {t.streak.description}
               </p>
-              <div className="mt-4 flex items-center justify-center gap-6 text-sm md:text-base text-gray-700">
-                <span>
-                  {t.streak.current}: <strong>{streak}</strong>
-                </span>
-                <span>
-                  {t.streak.best}: <strong>{bestStreak}</strong>
-                </span>
+              <div className="mt-6 flex items-center justify-center gap-8">
+                <div className="flex flex-col items-center">
+                  <span className="text-sm font-bold text-gray-400 uppercase">{t.streak.current}</span>
+                  <span className="text-3xl font-black text-orange-500">{streak}</span>
+                </div>
+                <div className="w-px h-10 bg-gray-200" />
+                <div className="flex flex-col items-center">
+                  <span className="text-sm font-bold text-gray-400 uppercase">{t.streak.best}</span>
+                  <span className="text-3xl font-black text-gray-600">{bestStreak}</span>
+                </div>
               </div>
             </motion.div>
 
-            <CategorySelector
-              selectedCategory={selectedCategory}
-              onSelectCategory={setSelectedCategory}
-            />
+            <div className="w-full mb-8">
+              <CategorySelector
+                selectedCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+              />
+            </div>
 
             <motion.div
-              initial={{ y: 20, opacity: 0 }}
+              initial={{ y: shouldReduceMotion ? 0 : 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="mt-8"
+              transition={{ delay: shouldReduceMotion ? 0 : 0.2 }}
+              className="mt-4"
             >
               <Button
                 onClick={startGame}
                 variant="success"
                 size="large"
-                className="px-12"
+                className="px-12 text-xl shadow-lg shadow-green-200 hover:shadow-xl hover:shadow-green-300 transform hover:-translate-y-1 transition-all"
               >
-                🔥 {t.streak.start}
+                🚀 {t.streak.start}
               </Button>
             </motion.div>
           </div>
@@ -571,13 +628,11 @@ function StreakPageContent() {
   if (!currentWord) {
     return (
       <PageTransition>
-        <div className="min-h-screen p-4 md:p-8 flex flex-col">
+        <div className="min-h-screen p-4 md:p-8 flex flex-col items-center justify-center">
           <ScreenHeader className="mb-8" />
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-6xl mb-4">⏳</div>
-              <p className="text-xl text-gray-600">Ladataan peliä...</p>
-            </div>
+          <div className="text-center">
+            <div className="text-6xl mb-4 animate-bounce">⏳</div>
+            <p className="text-xl text-gray-600 font-medium">Ladataan peliä...</p>
           </div>
         </div>
       </PageTransition>
@@ -586,10 +641,33 @@ function StreakPageContent() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen p-4 md:p-8 flex flex-col">
-        <ScreenHeader className="mb-6" />
+      <div className="min-h-screen p-4 md:p-8 flex flex-col relative overflow-hidden">
+        {/* Animated Background Elements - Hidden on mobile */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none hidden md:block">
+          {!shouldReduceMotion && (
+            <>
+              <motion.div
+                className="absolute top-1/4 left-10 text-6xl opacity-10"
+                animate={{ y: [0, -40, 0], scale: [1, 1.2, 1] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                🔥
+              </motion.div>
+              <motion.div
+                className="absolute bottom-1/3 right-20 text-7xl opacity-10"
+                animate={{ y: [0, 30, 0], rotate: [0, 10, 0] }}
+                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+              >
+                ⚡
+              </motion.div>
+            </>
+          )}
+          <div className="absolute top-0 left-0 w-full h-full bg-[url('/grid-pattern.svg')] opacity-5"></div>
+        </div>
 
-        <div className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full gap-8">
+        <ScreenHeader className="mb-6 relative z-10" />
+
+        <div className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full gap-6 relative z-10">
           <StreakHUD
             current={streak}
             best={bestStreak}
@@ -617,7 +695,7 @@ function StreakPageContent() {
               word={currentWord.fi}
             />
 
-            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-2xl">
+            <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-3xl">
               {choiceElements}
             </div>
           </DndContext>
@@ -627,44 +705,56 @@ function StreakPageContent() {
       <AnimatePresence>
         {showReset && (
           <motion.div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-20 p-4"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-3xl shadow-soft p-6 md:p-8 max-w-md w-full text-center"
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white rounded-[2rem] shadow-2xl p-8 max-w-md w-full text-center border-4 border-white"
             >
-              <h2 className="text-2xl font-bold text-gray-800 mb-3">
+              <div className="text-6xl mb-4">💥</div>
+              <h2 className="text-3xl font-black text-gray-800 mb-2">
                 {t.streak.streakLost}
               </h2>
-              <p className="text-gray-600 mb-6">
-                {t.streak.current}: <strong>{lastStreak}</strong> • {t.streak.best}:{' '}
-                <strong>{bestStreak}</strong>
-              </p>
+              <div className="bg-gray-50 rounded-2xl p-4 mb-6">
+                <div className="flex justify-center gap-8 text-lg">
+                  <div className="flex flex-col">
+                    <span className="text-xs font-bold text-gray-400 uppercase">{t.streak.current}</span>
+                    <span className="text-2xl font-black text-gray-800">{lastStreak}</span>
+                  </div>
+                  <div className="w-px bg-gray-200" />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-bold text-gray-400 uppercase">{t.streak.best}</span>
+                    <span className="text-2xl font-black text-orange-500">{bestStreak}</span>
+                  </div>
+                </div>
+              </div>
+
               {lastCorrectAnswer && (
-                <p className="text-gray-600 mb-6">
-                  {t.challenge.showAnswer}{' '}
-                  <span className="font-semibold text-gray-900">{lastCorrectAnswer}</span>
-                </p>
+                <div className="mb-8">
+                  <p className="text-gray-500 text-sm mb-1">{t.challenge.showAnswer}</p>
+                  <p className="text-xl font-bold text-emerald-600">{lastCorrectAnswer}</p>
+                </div>
               )}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+
+              <div className="flex flex-col gap-3">
                 <Button
                   onClick={handleRestart}
-                  variant="secondary"
+                  variant="primary"
                   size="large"
-                  className="w-full sm:w-auto"
+                  className="w-full shadow-lg shadow-blue-200"
                 >
                   🔁 {t.streak.retry}
                 </Button>
                 <Button
                   onClick={() => router.push('/')}
-                  variant="primary"
+                  variant="secondary"
                   size="large"
-                  className="w-full sm:w-auto"
+                  className="w-full"
                 >
                   🏠 {t.common.backToMenu}
                 </Button>
@@ -681,10 +771,10 @@ export default function StreakPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
           <div className="text-center">
-            <div className="text-6xl mb-4">⏳</div>
-            <p className="text-xl text-gray-600">Ladataan...</p>
+            <div className="text-6xl mb-4 animate-bounce">⏳</div>
+            <p className="text-xl text-gray-600 font-medium">Ladataan...</p>
           </div>
         </div>
       }

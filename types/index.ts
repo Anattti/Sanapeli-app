@@ -28,6 +28,8 @@ export interface StreakStats {
 export interface Translations {
   common: {
     backToMenu: string;
+    word: string;
+    words: string;
   };
   menu: {
     title: string;

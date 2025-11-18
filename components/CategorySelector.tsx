@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getCategories, getWordsByCategory } from '@/data/words';
 
@@ -35,14 +35,30 @@ export default function CategorySelector({
       name: language === 'fi' ? category.nameFi : category.nameEn,
       emoji: category.emoji,
       count: category.count,
+      color: 'from-indigo-400 to-blue-500', // Default color
     }));
+
+    // Assign distinct colors for visual variety
+    const colors = [
+      'from-orange-400 to-red-500',
+      'from-green-400 to-emerald-500',
+      'from-blue-400 to-cyan-500',
+      'from-purple-400 to-pink-500',
+      'from-yellow-400 to-amber-500',
+      'from-pink-400 to-rose-500',
+    ];
+
+    translatedCategories.forEach((cat, index) => {
+      cat.color = colors[index % colors.length];
+    });
 
     return [
       {
         id: 'all',
-        name: language === 'fi' ? 'Kaikki sanat' : 'All words',
-        emoji: '📚',
+        name: language === 'fi' ? 'Kaikki' : 'All',
+        emoji: '🌟',
         count: getWordsByCategory('all').length,
+        color: 'from-slate-700 to-slate-900',
       },
       ...translatedCategories,
     ];
@@ -57,13 +73,20 @@ export default function CategorySelector({
     [onSelectCategory, selectedCategory],
   );
 
-  const focusAndRevealItem = useCallback((index: number) => {
+  const scrollToItem = useCallback((index: number) => {
     const node = itemRefs.current[index];
     if (node) {
-      node.focus({ preventScroll: true });
       node.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
   }, []);
+
+  // Center selected item on mount and change
+  useEffect(() => {
+    const index = items.findIndex((item) => item.id === selectedCategory);
+    if (index !== -1) {
+      scrollToItem(index);
+    }
+  }, [selectedCategory, items, scrollToItem]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -75,9 +98,9 @@ export default function CategorySelector({
       const direction = event.key === 'ArrowRight' ? 1 : -1;
       const nextIndex = (index + direction + items.length) % items.length;
       handleSelect(items[nextIndex].id);
-      focusAndRevealItem(nextIndex);
+      // Scrolling is handled by the useEffect above when selectedCategory changes
     },
-    [focusAndRevealItem, handleSelect, items],
+    [handleSelect, items],
   );
 
   const updateScrollIndicators = useCallback(() => {
@@ -89,9 +112,9 @@ export default function CategorySelector({
     }
 
     const { scrollLeft, scrollWidth, clientWidth } = node;
-    const maxScrollLeft = scrollWidth - clientWidth;
-    setCanScrollLeft(scrollLeft > 8);
-    setCanScrollRight(scrollLeft < maxScrollLeft - 8);
+    // Add a small buffer (1px) to handle sub-pixel scrolling issues
+    setCanScrollLeft(scrollLeft > 1);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
   }, []);
 
   useEffect(() => {
@@ -102,133 +125,130 @@ export default function CategorySelector({
 
     const handleScroll = () => updateScrollIndicators();
     node.addEventListener('scroll', handleScroll, { passive: true });
-
-    let resizeObserver: ResizeObserver | null = null;
-    if (typeof ResizeObserver !== 'undefined') {
-      resizeObserver = new ResizeObserver(() => updateScrollIndicators());
-      resizeObserver.observe(node);
-    }
+    window.addEventListener('resize', updateScrollIndicators);
 
     return () => {
       node.removeEventListener('scroll', handleScroll);
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
+      window.removeEventListener('resize', updateScrollIndicators);
     };
   }, [updateScrollIndicators]);
 
-  useEffect(() => {
-    updateScrollIndicators();
-  }, [items, updateScrollIndicators]);
-
-  const ArrowIndicator = ({
-    direction,
-    visible,
-  }: {
-    direction: 'left' | 'right';
-    visible: boolean;
-  }) => {
-    const isLeft = direction === 'left';
-    const gradientClass = isLeft
-      ? 'left-0 bg-gradient-to-r'
-      : 'right-0 bg-gradient-to-l';
-    const wobble = isLeft ? [-2, 2, -2] : [2, -2, 2];
-
-    return (
-      <motion.div
-        initial={false}
-        animate={{
-          opacity: visible ? 1 : 0,
-          x: visible ? 0 : isLeft ? -12 : 12,
-        }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
-        className={`pointer-events-none absolute inset-y-2 ${gradientClass} w-12 sm:w-16 rounded-3xl from-white via-white/70 to-transparent`}
-      >
-        <motion.span
-          aria-hidden
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 grid h-8 w-8 place-items-center rounded-full bg-white/80 shadow-soft ring-1 ring-white/60 text-indigo-400"
-          animate={visible ? { x: wobble } : { x: 0 }}
-          transition={{
-            duration: 1.2,
-            repeat: visible ? Infinity : 0,
-            ease: 'easeInOut',
-          }}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-4 w-4"
-          >
-            {isLeft ? (
-              <path d="M15 18l-6-6 6-6" />
-            ) : (
-              <path d="M9 6l6 6-6 6" />
-            )}
-          </svg>
-        </motion.span>
-      </motion.div>
-    );
+  const scroll = (direction: 'left' | 'right') => {
+    const node = scrollRef.current;
+    if (node) {
+      const scrollAmount = node.clientWidth * 0.8;
+      node.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
   };
 
   return (
-    <div className="relative w-full max-w-5xl mx-auto mb-8">
-      <ArrowIndicator direction="left" visible={canScrollLeft} />
-      <ArrowIndicator direction="right" visible={canScrollRight} />
+    <div className="relative w-full max-w-6xl mx-auto">
+      {/* Scroll Buttons (Desktop) */}
+      <AnimatePresence>
+        {canScrollLeft && (
+          <motion.button
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 10 }}
+            onClick={() => scroll('left')}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 -ml-4 md:-ml-12 w-10 h-10 md:w-12 md:h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-blue-600 hover:scale-110 transition-all hidden md:flex"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </motion.button>
+        )}
+      </AnimatePresence>
 
-      <motion.div
-        layout
+      <AnimatePresence>
+        {canScrollRight && (
+          <motion.button
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            onClick={() => scroll('right')}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 -mr-4 md:-mr-12 w-10 h-10 md:w-12 md:h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-blue-600 hover:scale-110 transition-all hidden md:flex"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* Gradient Masks for Scroll Indication */}
+      <div className={`absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white/80 to-transparent z-10 pointer-events-none transition-opacity duration-300 ${canScrollLeft ? 'opacity-100' : 'opacity-0'} rounded-l-3xl`} />
+      <div className={`absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white/80 to-transparent z-10 pointer-events-none transition-opacity duration-300 ${canScrollRight ? 'opacity-100' : 'opacity-0'} rounded-r-3xl`} />
+
+      {/* Scrollable Container */}
+      <div
         ref={scrollRef}
+        className="flex gap-4 overflow-x-auto pb-6 pt-2 px-4 snap-x snap-mandatory no-scrollbar scroll-smooth"
         role="listbox"
         aria-label={language === 'fi' ? 'Kategoria' : 'Category'}
-        className="flex gap-3 overflow-x-auto pb-2 pt-1 px-1 snap-x snap-mandatory no-scrollbar scroll-smooth"
       >
         {items.map((item, index) => {
           const isSelected = selectedCategory === item.id;
 
-          const palette = isSelected
-            ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-sky-500 text-white shadow-xl shadow-indigo-500/20'
-            : 'bg-white/80 text-gray-700 ring-1 ring-white/40 hover:bg-white hover:ring-indigo-200/60';
-
           return (
             <motion.button
               key={item.id}
-              type="button"
               ref={(node) => {
                 itemRefs.current[index] = node;
               }}
-              role="option"
-              aria-selected={isSelected}
               onClick={() => handleSelect(item.id)}
               onKeyDown={(event) => handleKeyDown(event, index)}
-              whileHover={!isSelected ? { translateY: -2 } : undefined}
-              whileTap={{ scale: 0.98 }}
-              className={`snap-center shrink-0 min-w-[160px] sm:min-w-[190px] px-5 py-4 rounded-3xl text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200/80 ${palette}`}
-              data-testid="category-selector-item"
+              role="option"
+              aria-selected={isSelected}
+              layout
+              initial={false}
+              animate={{
+                scale: isSelected ? 1.05 : 1,
+                opacity: isSelected ? 1 : 0.7,
+              }}
+              whileHover={{ scale: isSelected ? 1.05 : 1.02, opacity: 1 }}
+              whileTap={{ scale: 0.95 }}
+              className={`
+                relative shrink-0 snap-center
+                w-40 h-48 md:w-48 md:h-56
+                rounded-3xl overflow-hidden
+                flex flex-col items-center justify-center
+                transition-all duration-300
+                focus:outline-none focus:ring-4 focus:ring-blue-400
+                ${isSelected ? 'shadow-xl ring-4 ring-white/50' : 'shadow-md hover:shadow-lg'}
+              `}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{item.emoji}</span>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-base sm:text-lg tracking-tight">
-                    {item.name}
-                  </span>
-                  <span
-                    className={`text-xs sm:text-sm font-medium ${
-                      isSelected ? 'text-white/80' : 'text-gray-500'
-                    }`}
-                  >
-                    {language === 'fi' ? `${item.count} sanaa` : `${item.count} words`}
-                  </span>
-                </div>
+              {/* Background Gradient */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${item.color} transition-opacity duration-300`} />
+
+              {/* Content */}
+              <div className="relative z-10 flex flex-col items-center text-center p-4">
+                <span className="text-5xl md:text-6xl mb-4 filter drop-shadow-md transform transition-transform duration-300 group-hover:scale-110">
+                  {item.emoji}
+                </span>
+                <span className="text-white font-bold text-lg md:text-xl leading-tight mb-1 drop-shadow-sm">
+                  {item.name}
+                </span>
+                <span className="text-white/80 text-xs md:text-sm font-medium bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm">
+                  {item.count} {language === 'fi' ? 'sanaa' : 'words'}
+                </span>
               </div>
+
+              {/* Selection Indicator */}
+              {isSelected && (
+                <motion.div
+                  layoutId="selection-ring"
+                  className="absolute inset-0 border-4 border-white rounded-3xl pointer-events-none"
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
+              )}
             </motion.button>
           );
         })}
-      </motion.div>
+      </div>
     </div>
   );
 }

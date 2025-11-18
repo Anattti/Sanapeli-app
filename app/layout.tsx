@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fi">
+    <html>
       <body className={`${poppins.variable} antialiased font-sans`}>
         <LanguageProvider>{children}</LanguageProvider>
         <Analytics />

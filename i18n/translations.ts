@@ -4,6 +4,8 @@ export const translations: Record<Language, Translations> = {
   fi: {
     common: {
       backToMenu: 'Takaisin valikkoon',
+      word: 'sana',
+      words: 'sanaa',
     },
     menu: {
       title: 'Opi englantia emojeilla!',
@@ -68,6 +70,8 @@ export const translations: Record<Language, Translations> = {
   en: {
     common: {
       backToMenu: 'Back to Menu',
+      word: 'word',
+      words: 'words',
     },
     menu: {
       title: 'Learn English with Emojis!',
