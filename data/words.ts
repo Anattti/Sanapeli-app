@@ -457,7 +457,7 @@ export const words: Word[] = [
   // ========================================
   // GRAMMAR - Kielioppi (100 sanaa)
   // ========================================
-  
+
   // VERBS - Verbit
   { emoji: '', en: 'to be', fi: 'olla', weight: 1, category: 'grammar' },
   { emoji: '', en: 'to have', fi: 'omistaa', weight: 1, category: 'grammar' },
@@ -508,7 +508,7 @@ export const words: Word[] = [
   { emoji: '🔒', en: 'to close', fi: 'sulkea', weight: 1, category: 'grammar' },
   { emoji: '🔑', en: 'to lock', fi: 'lukita', weight: 1, category: 'grammar' },
   { emoji: '🔓', en: 'to unlock', fi: 'avata lukko', weight: 1, category: 'grammar' },
-  
+
   // ADJECTIVES - Adjektiivit
   { emoji: '📏', en: 'big', fi: 'iso', weight: 1, category: 'grammar' },
   { emoji: '🔬', en: 'small', fi: 'pieni', weight: 1, category: 'grammar' },
@@ -546,7 +546,7 @@ export const words: Word[] = [
   { emoji: '🍋', en: 'sour', fi: 'hapan', weight: 1, category: 'grammar' },
   { emoji: '🧂', en: 'salty', fi: 'suolainen', weight: 1, category: 'grammar' },
   { emoji: '🌶️', en: 'spicy', fi: 'tulinen', weight: 1, category: 'grammar' },
-  
+
   // PREPOSITIONS & ADVERBS - Prepositiot ja adverbit
   { emoji: '📍', en: 'here', fi: 'täällä', weight: 1, category: 'grammar' },
   { emoji: '📌', en: 'there', fi: 'siellä', weight: 1, category: 'grammar' },
@@ -593,7 +593,7 @@ export const words: Word[] = [
   { emoji: '🤷', en: 'how', fi: 'miten', weight: 1, category: 'grammar' },
   { emoji: '❔', en: 'what', fi: 'mitä', weight: 1, category: 'grammar' },
   { emoji: '👤', en: 'who', fi: 'kuka', weight: 1, category: 'grammar' },
-  
+
   // NUMBERS - Numerot
   { emoji: '0️⃣', en: 'zero', fi: 'nolla', weight: 1, category: 'grammar' },
   { emoji: '1️⃣', en: 'one', fi: 'yksi', weight: 1, category: 'grammar' },
@@ -608,7 +608,7 @@ export const words: Word[] = [
   { emoji: '🔟', en: 'ten', fi: 'kymmenen', weight: 1, category: 'grammar' },
   { emoji: '💯', en: 'hundred', fi: 'sata', weight: 1, category: 'grammar' },
   { emoji: '🔢', en: 'thousand', fi: 'tuhat', weight: 1, category: 'grammar' },
-  
+
   // PRONOUNS - Pronominit
   { emoji: '👤', en: 'I', fi: 'minä', weight: 1, category: 'grammar' },
   { emoji: '👉', en: 'you', fi: 'sinä', weight: 1, category: 'grammar' },
@@ -623,7 +623,7 @@ export const words: Word[] = [
   { emoji: '☝️', en: 'that', fi: 'tuo', weight: 1, category: 'grammar' },
   { emoji: '👆', en: 'these', fi: 'nämä', weight: 1, category: 'grammar' },
   { emoji: '👉', en: 'those', fi: 'nuo', weight: 1, category: 'grammar' },
-  
+
   // DAYS OF THE WEEK - Viikonpäivät
   { emoji: '📅', en: 'Monday', fi: 'maanantai', weight: 1, category: 'grammar' },
   { emoji: '📅', en: 'Tuesday', fi: 'tiistai', weight: 1, category: 'grammar' },
@@ -632,7 +632,7 @@ export const words: Word[] = [
   { emoji: '📅', en: 'Friday', fi: 'perjantai', weight: 1, category: 'grammar' },
   { emoji: '📅', en: 'Saturday', fi: 'lauantai', weight: 1, category: 'grammar' },
   { emoji: '📅', en: 'Sunday', fi: 'sunnuntai', weight: 1, category: 'grammar' },
-  
+
   // MONTHS - Kuukaudet
   { emoji: '📆', en: 'January', fi: 'tammikuu', weight: 1, category: 'grammar' },
   { emoji: '📆', en: 'February', fi: 'helmikuu', weight: 1, category: 'grammar' },
@@ -646,12 +646,88 @@ export const words: Word[] = [
   { emoji: '📆', en: 'October', fi: 'lokakuu', weight: 1, category: 'grammar' },
   { emoji: '📆', en: 'November', fi: 'marraskuu', weight: 1, category: 'grammar' },
   { emoji: '📆', en: 'December', fi: 'joulukuu', weight: 1, category: 'grammar' },
-  
+
   // SEASONS - Vuodenajat
   { emoji: '🌸', en: 'spring', fi: 'kevät', weight: 1, category: 'grammar' },
   { emoji: '☀️', en: 'summer', fi: 'kesä', weight: 1, category: 'grammar' },
   { emoji: '🍂', en: 'autumn', fi: 'syksy', weight: 1, category: 'grammar' },
   { emoji: '❄️', en: 'winter', fi: 'talvi', weight: 1, category: 'grammar' },
+
+  // ========================================
+  // WORDS 4-7 - Sanat 4-7 (from textbook)
+  // ========================================
+
+  // Page 5 - Places in town
+  { emoji: '🛣️', en: 'street', fi: 'katu', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🚏', en: 'bus stop', fi: 'linja-autopysäkki', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🏊', en: 'swim centre', fi: 'uimahalli', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🏬', en: 'mall', fi: 'ostoskeskus', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🚴', en: 'bike lane', fi: 'pyörätie', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🚉', en: 'train station', fi: 'juna-asema', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🚦', en: 'traffic lights', fi: 'liikennevalot', weight: 1, category: 'words47' },
+  { emoji: '🦓', en: 'zebra crossing', fi: 'suojatie', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🌉', en: 'bridge', fi: 'silta', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🎡', en: 'amusement park', fi: 'huvipuisto', weight: 1, article: 'an', category: 'words47' },
+  { emoji: '🛝', en: 'playground', fi: 'leikkipuisto', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🚓', en: 'police station', fi: 'poliisiasema', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🥖', en: 'bakery', fi: 'leipomo', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '💊', en: 'pharmacy', fi: 'apteekki', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🎭', en: 'theatre', fi: 'teatteri', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '⛪', en: 'church', fi: 'kirkko', weight: 1, article: 'a', category: 'words47' },
+
+  // Page 3 - Health and illness
+  { emoji: '🤕', en: 'headache', fi: 'päänsärky', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '😷', en: 'sore throat', fi: 'kurkkukipu', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🤧', en: 'runny nose', fi: 'nuha', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🌡️', en: 'temperature', fi: 'kuume', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🤒', en: 'cold', fi: 'flunsss', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🤢', en: 'stomach ache', fi: 'vatsakipu', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🦵', en: 'broken leg', fi: 'murtunut jalka', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '😮‍💨', en: 'cough', fi: 'yskä', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🟣', en: 'bruise', fi: 'mustelma', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🩹', en: 'cut', fi: 'haava', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🦶', en: 'sprained ankle', fi: 'nyrjähtänyt nilkka', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🩹', en: 'plaster', fi: 'laastari', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🦴', en: 'cast', fi: 'kipsi', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '🌡️', en: 'thermometer', fi: 'kuumemittari', weight: 1, article: 'a', category: 'words47' },
+  { emoji: '💊', en: 'medicine', fi: 'lääke', weight: 1, category: 'words47' },
+  { emoji: '🧻', en: 'tissue', fi: 'nenäliina', weight: 1, article: 'a', category: 'words47' },
+
+  // Page 6 - Breakfast foods
+  { emoji: '🥣', en: 'porridge', fi: 'puuro', weight: 1, category: 'words47' },
+  { emoji: '🥣', en: 'cereal', fi: 'muroi', weight: 1, category: 'words47' },
+  { emoji: '🥛', en: 'yogurt', fi: 'jugurtti', weight: 1, category: 'words47' },
+  { emoji: '🍞', en: 'toast', fi: 'paahtoleipä', weight: 1, category: 'words47' },
+  { emoji: '🍖', en: 'ham', fi: 'kinkku', weight: 1, category: 'words47' },
+  { emoji: '🧀', en: 'cheese', fi: 'juusto', weight: 1, category: 'words47' },
+  { emoji: '🍵', en: 'tea', fi: 'tee', weight: 1, category: 'words47' },
+  { emoji: '☕', en: 'hot chocolate', fi: 'kaakao', weight: 1, category: 'words47' },
+  { emoji: '🌭', en: 'sausages', fi: 'makkarat', weight: 1, category: 'words47' },
+  { emoji: '🍄', en: 'mushrooms', fi: 'sienet', weight: 1, category: 'words47' },
+  { emoji: '🍳', en: 'fried eggs', fi: 'paistetut kananmunat', weight: 1, category: 'words47' },
+  { emoji: '🥐', en: 'rolls', fi: 'sämpylät', weight: 1, category: 'words47' },
+  { emoji: '🥪', en: 'sandwiches', fi: 'voileivät', weight: 1, category: 'words47' },
+  { emoji: '🫐', en: 'berries', fi: 'marjat', weight: 1, category: 'words47' },
+  { emoji: '🧇', en: 'waffles', fi: 'vohvelit', weight: 1, category: 'words47' },
+  { emoji: '🫘', en: 'beans', fi: 'pavut', weight: 1, category: 'words47' },
+
+  // Page 7 - Past tense verbs
+  { emoji: '🧹', en: 'cleaned', fi: 'siivosi', weight: 1, category: 'words47' },
+  { emoji: '🧼', en: 'washed', fi: 'pesi', weight: 1, category: 'words47' },
+  { emoji: '👋', en: 'visited', fi: 'vieraili', weight: 1, category: 'words47' },
+  { emoji: '📚', en: 'learned', fi: 'oppi', weight: 1, category: 'words47' },
+  { emoji: '🔧', en: 'used', fi: 'käytti', weight: 1, category: 'words47' },
+  { emoji: '🎾', en: 'practised', fi: 'harjoitteli', weight: 1, category: 'words47' },
+  { emoji: '📞', en: 'called', fi: 'soitti', weight: 1, category: 'words47' },
+  { emoji: '🎨', en: 'painted', fi: 'maalasi', weight: 1, category: 'words47' },
+  { emoji: '🔄', en: 'changed', fi: 'vaihtoi', weight: 1, category: 'words47' },
+  { emoji: '📖', en: 'borrowed', fi: 'lainasi', weight: 1, category: 'words47' },
+  { emoji: '💋', en: 'kissed', fi: 'pussasi', weight: 1, category: 'words47' },
+  { emoji: '🤗', en: 'hugged', fi: 'halasi', weight: 1, category: 'words47' },
+  { emoji: '🤝', en: 'joined', fi: 'liittyi', weight: 1, category: 'words47' },
+  { emoji: '🧘', en: 'relaxed', fi: 'rentoutui', weight: 1, category: 'words47' },
+  { emoji: '😂', en: 'laughed', fi: 'nauroi', weight: 1, category: 'words47' },
+  { emoji: '😭', en: 'cried', fi: 'itki', weight: 1, category: 'words47' },
 
   // Yhteensä noin 500+ sanaa eri kategorioissa
 ];
@@ -672,7 +748,7 @@ export interface CategoryInfo {
  */
 export function getCategories(): CategoryInfo[] {
   const uniqueCategories = Array.from(new Set(words.map(w => w.category)));
-  
+
   const categoryNames: Record<string, { fi: string; en: string; emoji: string }> = {
     camping: { fi: 'Retkeily', en: 'Camping', emoji: '⛺' },
     animals: { fi: 'Eläimet', en: 'Animals', emoji: '🐾' },
@@ -685,8 +761,9 @@ export function getCategories(): CategoryInfo[] {
     clothes: { fi: 'Vaatteet', en: 'Clothes', emoji: '👕' },
     transport: { fi: 'Liikenne', en: 'Transport', emoji: '🚗' },
     grammar: { fi: 'Kielioppi', en: 'Grammar', emoji: '📝' },
+    words47: { fi: 'Sanat 4-7', en: 'Words 4-7', emoji: '📖' },
   };
-  
+
   return uniqueCategories.map(cat => ({
     id: cat,
     nameFi: categoryNames[cat]?.fi || cat,
